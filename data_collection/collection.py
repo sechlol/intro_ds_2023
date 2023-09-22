@@ -31,7 +31,7 @@ def _collect_from_sources(data_sources: List[DataSource]) -> List[pd.DataFrame]:
         if data is None:
             print("\t! Failed to collect data")
         else:
-            print("\t* Collected", data.columns)
+            print("\t* Collected", data.columns.to_list())
             all_data.append(data)
 
     return all_data
