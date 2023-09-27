@@ -8,11 +8,11 @@ def collect_data():
         dc.YahooDataSource(),
         dc.AlphaDataSource(),
         dc.FredDataSource(),
-        dc.RandomDataSource(symbols=["SP500", "XLK", "XLP", "VIX", "GDP", "CSen", "10Y", "2Y"])
+        # dc.RandomDataSource(symbols=["SP500", "XLK", "XLP", "VIX", "GDP", "CSen", "10Y", "2Y"])
     ]
 
     dataset = dc.aggregate_sources(data_sources)
-    dataset.to_csv("out/dataset.csv", index=False, float_format='%.2f')
+    dataset.to_csv("out/dataset.csv", float_format='%.2f')
     return dataset
 
 
