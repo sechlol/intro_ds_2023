@@ -13,7 +13,7 @@ class FredDataSource(DataSource):
 
     @property
     def name(self) -> str:
-        return "HelloHello"
+        return "HelloHello3"
 
     def get_data(self) -> Optional[pd.DataFrame]:
         return None
