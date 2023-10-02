@@ -15,5 +15,6 @@ class FredDataSource(DataSource):
     def name(self) -> str:
         return "HelloHello3"
 
+
     def get_data(self) -> Optional[pd.DataFrame]:
         return None
