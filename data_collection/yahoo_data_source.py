@@ -20,6 +20,7 @@ class YahooDataSource(DataSource):
 
     def get_data(self) -> Optional[pd.DataFrame]:
         dfs = [
+            self._get_ticker("SPY"),
             self._get_ticker("XLE"),
             self._get_ticker("XLY"),
             self._get_ticker("XLF"),
@@ -27,10 +28,10 @@ class YahooDataSource(DataSource):
             self._get_ticker("XLI"),
             self._get_ticker("XLK"),
             self._get_ticker("XLB"),
-            self._get_ticker("XLRE"),
-            self._get_ticker("XLC"),
             self._get_ticker("XLU"),
-            self._get_ticker("XLP")
+            self._get_ticker("XLP"),
+            #self._get_ticker("XLRE"),  # Has data only from 2015
+            #self._get_ticker("XLC"),   # Has data only from 2018
         ]
         return pd.concat(dfs, axis=1).dropna()
 
