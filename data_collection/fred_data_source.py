@@ -23,13 +23,13 @@ class FredDataSource(DataSource):
 
     def get_data(self) -> Optional[pd.DataFrame]:
         series_ids = [
-            "USSLIND",  # The leading index for each state predicts the six-month growth rate of the state's coincident index. In addition to the coincident index, variables that lead the economy: state-level housing permits (1 to 4 units), state initial unemployment insurance claims, delivery times from the Institute for Supply Management (ISM) manufacturing survey, and the interest rate spread between the 10-year Treasury bond and the 3-month Treasury bill.
-            # "T10Y2Y",  # 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity
-            # "AWHAETP",  # Average weekly hours of All Employees, Total Private
-            # "AWHMAN",  # Average Weekly Hours of Production and Nonsupervisory Employees, Manufacturing
-            # "NEWORDER",  # Manufacturers' New Orders: Nondefense Capital Goods Excluding Aircraft
-            # "ACOGNO",  # Manufacturers' New Orders: Consumer Goods
-            # "M08297USM548NNBR" # Initial Claims, Unemployment Insurance, State Programs for United States
+            "T10Y2Y",  # 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity
+            "AWHMAN",  # Average Weekly Hours of Production and Nonsupervisory Employees, Manufacturing
+            "NEWORDER",  # Manufacturers' New Orders: Nondefense Capital Goods Excluding Aircraft
+            "ACOGNO",  # Manufacturers' New Orders: Consumer Goods
+            #"USSLIND",  # The leading index for each state predicts the six-month growth rate of the state's coincident index. In addition to the coincident index, variables that lead the economy: state-level housing permits (1 to 4 units), state initial unemployment insurance claims, delivery times from the Institute for Supply Management (ISM) manufacturing survey, and the interest rate spread between the 10-year Treasury bond and the 3-month Treasury bill.
+            #"AWHAETP",  # Average weekly hours of All Employees, Total Private
+            #"M08297USM548NNBR" # Initial Claims, Unemployment Insurance, State Programs for United States
         ]
 
         data_frames = []
@@ -37,7 +37,7 @@ class FredDataSource(DataSource):
             df = self._get_dfs(series_id)
             data_frames.append(df)
 
-        complete_df = pd.concat(data_frames, axis=1)
+        complete_df = pd.concat(data_frames, axis=1).dropna()
         return complete_df
 
     def _make_url(self, series_id: str):
@@ -52,30 +52,28 @@ class FredDataSource(DataSource):
 
         return url
 
-    @staticmethod
-    def _read_df(url: str, resample_frequency: Optional[str] = "B"):
-        """
-        :param url: The URL to read CSV from
-        :param resample_frequency: Transforms the original reading frequency to the frequency specified. For a list
-        of available frequencies, check https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
-        """
-        print(url)
-        #df = pd.read_filtered_df(url, parse_dates=True, index_col="timestamp")
-        return (filtered_df[filtered_df.index >= FredDataSource._START_DATE]
-                .resample(resample_frequency)
-                .ffill())
-
     def _get_dfs(self, series_id):
+
+        print("\t- ", series_id)
         url = self._make_url(series_id)
         raw_data = requests.get(url)
         json_data = json.loads(raw_data.text)
         observations = json_data["observations"]
         df = pd.DataFrame(observations)
-        df.dropna()
-        filtered_df = df[["date", "value"]]
-        filtered_df = filtered_df.rename(columns={"value": series_id})
-        filtered_df['date'] = pd.to_datetime(filtered_df['date'])
-        filtered_df = filtered_df.set_index('date')
-        filtered_df = filtered_df.resample("B").ffill()
-    return filtered_df
 
+        filtered_df = df.loc[:, ["date", "value"]]
+        filtered_df['date'] = pd.to_datetime(filtered_df['date'])
+        filtered_df['value'] = pd.to_numeric(filtered_df['value'], errors="coerce")
+
+        # Handle duplicate dates by grouping and keeping mean value
+        filtered_df = (filtered_df
+                       .sort_values(by='date')
+                       .groupby('date')['value']
+                       .mean()  # Keep the mean value for each duplicate date
+                       .reset_index())
+
+        return (filtered_df[filtered_df["date"] >= FredDataSource._START_DATE]
+                .dropna()
+                .rename(columns={"value": series_id})
+                .set_index('date')
+                .resample("B").ffill())
