@@ -5,8 +5,8 @@ import ml.super_duper_AI as ai
 
 def collect_data():
     data_sources = [
-        # dc.YahooDataSource(),
-        # dc.AlphaDataSource(),
+        dc.YahooDataSource(),
+        dc.AlphaDataSource(),
         dc.FredDataSource(),
         # dc.RandomDataSource(symbols=["SP500", "XLK", "XLP", "VIX", "GDP", "CSen", "10Y", "2Y"])
     ]
