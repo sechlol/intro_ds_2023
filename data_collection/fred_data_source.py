@@ -15,29 +15,35 @@ class FredDataSource(DataSource):
     _API_KEY = "86d47b19c7da7f5043b731d2d982755c"
     _URL = f"https://api.stlouisfed.org/fred/series/observations?api_key={_API_KEY}&file_type=json"
     _START_DATE = datetime(1970, 1, 1)
+    _REAL_TIME_DATE = datetime(2023, 10, 1)
 
     @property
     def name(self) -> str:
         return "FRED"
 
     def get_data(self) -> Optional[pd.DataFrame]:
-        dfs = [
-            self._get_info("USSLIND", ),
-            # The leadinfodex for each state predicts the six-month growth rate of the state's coincident index. In addition to the coincident index, variables that lead the economy: state-level housing permits (1 to 4 units), state initial unemployment insurance claims, delivery times from the Institute for Supply Management (ISM) manufacturing survey, and the interest rate spread between the 10-year Treasury bond and the 3-month Treasury bill.
-            # self._get_info("T10Y2Y"),  # 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity
-            # self._get_info("AWHAETP"),  # Average weekly hours of All Employees, Total Private
-            # self._get_info("AWHMAN"),  # Average Weekly Hours of Production and Nonsupervisory Employees, Manufacturing
-            # self._get_info("NEWORDER"),  # Manufacturers' New Orders: Nondefense Capital Goods Excluding Aircraft
-            # self._get_info("ACOGNO"),  # Manufacturers' New Orders: Consumer Goods
-            # self._get_info("M08297USM548NNBR"),
-            # Initial Claims, Unemployment Insurance, State Programs for United States
+        series_ids = [
+            "USSLIND",  # The leading index for each state predicts the six-month growth rate of the state's coincident index. In addition to the coincident index, variables that lead the economy: state-level housing permits (1 to 4 units), state initial unemployment insurance claims, delivery times from the Institute for Supply Management (ISM) manufacturing survey, and the interest rate spread between the 10-year Treasury bond and the 3-month Treasury bill.
+            # "T10Y2Y",  # 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity
+            # "AWHAETP",  # Average weekly hours of All Employees, Total Private
+            # "AWHMAN",  # Average Weekly Hours of Production and Nonsupervisory Employees, Manufacturing
+            # "NEWORDER",  # Manufacturers' New Orders: Nondefense Capital Goods Excluding Aircraft
+            # "ACOGNO",  # Manufacturers' New Orders: Consumer Goods
+            # "M08297USM548NNBR" # Initial Claims, Unemployment Insurance, State Programs for United States
         ]
-        return pd.concat(dfs, axis=1).dropna()
+
+        data_frames = []
+        for series_id in series_ids:
+            df = self._get_dfs(series_id)
+            data_frames.append(df)
+
+        complete_df = pd.concat(data_frames, axis=1)
+        return complete_df
 
     def _make_url(self, series_id: str):
         parameters = {
             "series_id": series_id,
-            "realtime_start": self._START_DATE.strftime("%Y-%m-%d")
+            "realtime_start": self._REAL_TIME_DATE.strftime("%Y-%m-%d")
         }
 
         url = self._URL
@@ -46,11 +52,30 @@ class FredDataSource(DataSource):
 
         return url
 
-    def _get_info(self, series_id):
+    @staticmethod
+    def _read_df(url: str, resample_frequency: Optional[str] = "B"):
+        """
+        :param url: The URL to read CSV from
+        :param resample_frequency: Transforms the original reading frequency to the frequency specified. For a list
+        of available frequencies, check https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
+        """
+        print(url)
+        #df = pd.read_filtered_df(url, parse_dates=True, index_col="timestamp")
+        return (filtered_df[filtered_df.index >= FredDataSource._START_DATE]
+                .resample(resample_frequency)
+                .ffill())
+
+    def _get_dfs(self, series_id):
         url = self._make_url(series_id)
         raw_data = requests.get(url)
         json_data = json.loads(raw_data.text)
         observations = json_data["observations"]
         df = pd.DataFrame(observations)
+        df.dropna()
         filtered_df = df[["date", "value"]]
-        lel = 0
+        filtered_df = filtered_df.rename(columns={"value": series_id})
+        filtered_df['date'] = pd.to_datetime(filtered_df['date'])
+        filtered_df = filtered_df.set_index('date')
+        filtered_df = filtered_df.resample("B").ffill()
+    return filtered_df
+
