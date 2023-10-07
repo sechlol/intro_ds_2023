@@ -1,6 +1,6 @@
 import data_collection as dc
-import ml.super_duper_AI as ai
 import data_vis
+import ml.super_duper_AI as ai
 
 
 def collect_data():

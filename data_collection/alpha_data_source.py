@@ -39,13 +39,13 @@ class AlphaDataSource(DataSource):
         return self._URL + "&" + "&".join([f"{name}={val}" for name, val in params.items()])
 
     @staticmethod
-    def _read_df(url: str, resample_frequency: Optional[str] = "B"):
+    def _read_df(url: str, resample_frequency: Optional[str] = "B") -> pd.DataFrame:
         """
         :param url: The URL to read CSV from
         :param resample_frequency: Transforms the original reading frequency to the frequency specified. For a list
         of available frequencies, check https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
         """
-        print(url)
+        print(f"\t- {url}")
         df = pd.read_csv(url, parse_dates=True, index_col="timestamp")
         return (df[df.index >= AlphaDataSource._OLDEST_DATE_LIMIT]
                 .resample(resample_frequency)

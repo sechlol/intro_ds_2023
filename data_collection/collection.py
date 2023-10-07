@@ -57,12 +57,7 @@ def _aggregate(data_list: List[pd.DataFrame]) -> pd.DataFrame:
     if not data_list:
         raise ValueError("data_list is empty")
 
-    result_df = data_list[0]
-    # Iterate through the remaining DataFrames and perform an inner join on the index
-    for df in data_list[1:]:
-        result_df = result_df.join(df, how='inner')
-
-    return result_df
+    return pd.concat(data_list, axis=1).dropna()
 
 
 def aggregate_sources(data_sources: List[DataSource]) -> pd.DataFrame:
