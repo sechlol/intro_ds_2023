@@ -1,5 +1,6 @@
 import data_collection as dc
 import data_vis
+import data_vis.data_exploration as de
 import ml.super_duper_AI as ai
 
 
@@ -23,6 +24,7 @@ def main():
 
     print("\n** DATA EXPLORATION **")
     data_vis.explore_something(dataset)
+    de.correlation_matrix(dataset)
 
     # Run ML models and visualize results
     print("\n** ML MODEL TRAINING **")
