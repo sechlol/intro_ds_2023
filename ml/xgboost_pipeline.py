@@ -27,6 +27,14 @@ class Params:
     verbose_training: bool = False
 
 
+@dataclass
+class ResultData:
+    booster: xgb.Booster
+    history: pd.DataFrame
+    contributions: pd.DataFrame
+    extras: Dict
+
+
 def run_pipeline(dataset: pd.DataFrame):
     data = preprocess_data(dataset)
     target = make_target(data, periods_difference=30)
@@ -38,7 +46,7 @@ def run_pipeline(dataset: pd.DataFrame):
         train_matrix=xgb.DMatrix(x_train, y_train),
         test_matrix=xgb.DMatrix(x_test, y_test),
         params={"objective": "binary:logistic", "tree_method": "hist", "eval_metric": ["error", "auc", "logloss"]},
-        boost_rounds=50,
+        boost_rounds=200,
         early_stopping_rounds=20,
         cv_folds=5,
         verbose_training=False,
@@ -53,7 +61,15 @@ def run_pipeline(dataset: pd.DataFrame):
     contributions_raw = booster.predict(p.test_matrix, pred_contribs=True)
     contributions_df = pd.DataFrame(contributions_raw, columns=np.hstack([data.columns.values, ["bias"]]))
     extras = {"decision_threshold": threshold, "accuracy": accuracy}
-    save_result(booster, history, contributions_df, extras)
+
+    result_data = ResultData(
+        booster=booster,
+        history=history,
+        contributions=contributions_df,
+        extras=extras)
+
+    save_result(result_data)
+    return result_data
 
 
 def calculate_accuracy(predictions, y_test) -> Tuple[float, float]:
@@ -119,15 +135,12 @@ def make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame:
     return y.to_frame()
 
 
-def save_result(booster: xgb.Booster, history: pd.DataFrame, contributions: pd.DataFrame, extras: Dict):
+def save_result(result: ResultData):
     """
     Save XGBoost model, feature contributions, extras dictionary, and training history.
 
     Parameters:
-        booster (xgb.Booster): The trained XGBoost booster model.
-        history (pd.DataFrame): DataFrame containing training history.
-        contributions (pd.DataFrame): DataFrame containing feature contributions.
-        extras (Dict): A dictionary of additional information to be saved.
+        result (ResultData): An instance of ResultData containing result data.
 
     The function creates the necessary directory structure if it doesn't exist and saves
     the XGBoost model, feature contributions, extras dictionary, and training history
@@ -138,15 +151,18 @@ def save_result(booster: xgb.Booster, history: pd.DataFrame, contributions: pd.D
     _OUT_PATH.mkdir(parents=True, exist_ok=True)
 
     # Save files
-    booster.save_model(_OUT_PATH / "booster_model.json")
-    contributions.to_csv(_OUT_PATH / "features_contribution.csv")
+    result.booster.save_model(_OUT_PATH / "booster_model.json")
+    result.contributions.to_csv(_OUT_PATH / "features_contribution.csv")
     with open(_OUT_PATH / "extras.json", "w") as f:
-        json.dump(extras, f)
+        json.dump(result.extras, f)
 
     # Plot train metrics
-    history.plot()
+    result.history.plot()
     plt.savefig(_OUT_PATH / "train_history.png")
-    history.to_csv(_OUT_PATH / "train_history.csv")
+    result.history.to_csv(_OUT_PATH / "train_history.csv")
+
+    print(result.extras)
+    print(f"Saved results to {_OUT_PATH}")
 
 
 def do_training(params: Params) -> Tuple[xgb.Booster, pd.DataFrame]:
