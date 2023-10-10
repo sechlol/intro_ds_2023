@@ -35,7 +35,7 @@ class ResultData:
     extras: Dict
 
 
-def run_pipeline(dataset: pd.DataFrame):
+def run_pipeline(dataset: pd.DataFrame) -> ResultData:
     data = preprocess_data(dataset)
     target = make_target(data, periods_difference=30)
     split = train_test_split(data.to_numpy(), target.to_numpy(), train_size=0.8, random_state=_SEED)
@@ -46,7 +46,7 @@ def run_pipeline(dataset: pd.DataFrame):
         train_matrix=xgb.DMatrix(x_train, y_train),
         test_matrix=xgb.DMatrix(x_test, y_test),
         params={"objective": "binary:logistic", "tree_method": "hist", "eval_metric": ["error", "auc", "logloss"]},
-        boost_rounds=200,
+        boost_rounds=100,
         early_stopping_rounds=20,
         cv_folds=5,
         verbose_training=False,
@@ -151,6 +151,7 @@ def save_result(result: ResultData):
     _OUT_PATH.mkdir(parents=True, exist_ok=True)
 
     # Save files
+    result.history.to_csv(_OUT_PATH / "train_history.csv")
     result.booster.save_model(_OUT_PATH / "booster_model.json")
     result.contributions.to_csv(_OUT_PATH / "features_contribution.csv")
     with open(_OUT_PATH / "extras.json", "w") as f:
@@ -158,8 +159,11 @@ def save_result(result: ResultData):
 
     # Plot train metrics
     result.history.plot()
+    plt.xlabel("Training steps")
+    plt.ylabel("Metrics values")
+    plt.suptitle("XGBoost model convergence")
+    plt.tight_layout()
     plt.savefig(_OUT_PATH / "train_history.png")
-    result.history.to_csv(_OUT_PATH / "train_history.csv")
 
     print(result.extras)
     print(f"Saved results to {_OUT_PATH}")

@@ -36,7 +36,7 @@ def main():
     model_result = xgb.run_pipeline(dataset)
 
     print("\n** RESULT VISUALIZATION **")
-    data_vis.visualize_something(model_result)
+    data_vis.visualize_something(model_result.history)
 
 
 if __name__ == "__main__":
