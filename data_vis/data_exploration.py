@@ -2,7 +2,6 @@ import pandas as pd
 import seaborn as sb
 import matplotlib.pyplot as plt
 
-
 def explore_something(dataset: pd.DataFrame):
     print("Much exploration! Very data! Oh Yeah!")
 
