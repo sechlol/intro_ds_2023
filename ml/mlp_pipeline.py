@@ -30,7 +30,7 @@ def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool)
     x_train, x_test, y_train, y_test = split
 
     model = neural_network.MLPClassifier(
-        hidden_layer_sizes=200,
+        hidden_layer_sizes=100,
         max_iter=500,
         early_stopping=True,
         validation_fraction=0.15,
@@ -38,7 +38,7 @@ def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool)
         shuffle=True,
         learning_rate="constant",
         solver="adam",
-        batch_size=200,
+        batch_size=32,
         random_state=_SEED,
     ).fit(x_train, y_train)
 
