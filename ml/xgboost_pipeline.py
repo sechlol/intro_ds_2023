@@ -33,46 +33,80 @@ class ResultData:
     history: pd.DataFrame
     contributions: pd.DataFrame
     extras: Dict
+    cv_history: Optional[pd.DataFrame] = None
 
 
-def run_pipeline(dataset: pd.DataFrame) -> ResultData:
-    data = preprocess_data(dataset)
-    target = make_target(data, periods_difference=30)
-    split = train_test_split(data.to_numpy(), target.to_numpy(), train_size=0.8, random_state=_SEED)
+def run_pipeline(dataset: pd.DataFrame, cross_validate: bool) -> ResultData:
+    data = _preprocess_data(dataset)
+    target = _make_target(data, periods_difference=30)
+    split = train_test_split(data.to_numpy(), target.to_numpy(), train_size=0.95, random_state=_SEED)
     x_train, x_test, y_train, y_test = split
 
     # Create model parameters
     p = Params(
         train_matrix=xgb.DMatrix(x_train, y_train),
         test_matrix=xgb.DMatrix(x_test, y_test),
-        params={"objective": "binary:logistic", "tree_method": "hist", "eval_metric": ["error", "auc", "logloss"]},
-        boost_rounds=100,
+        params={
+            "objective": "binary:logistic",
+            "tree_method": "hist",
+            "max_depth": 10,
+            "min_child_weight": 5,
+            "alpha": 10,  # L1 regularization
+            "lambda": 10,  # L2 regularization
+            "gamma": 50,
+            "eta": 0.01,
+            "eval_metric": ["error", "auc", "logloss"]},
+        boost_rounds=50,
         early_stopping_rounds=20,
         cv_folds=5,
         verbose_training=False,
     )
 
     # Do training
-    booster, history = do_training(p)
+    cv_result = _do_cross_validation(p) if cross_validate else None
+    booster, history = _do_training(p)
 
     # Process results
-    predictions = booster.predict(p.test_matrix)
-    accuracy, threshold = calculate_accuracy(predictions, y_test)
-    contributions_raw = booster.predict(p.test_matrix, pred_contribs=True)
+    predict_matrix = xgb.DMatrix(x_test)
+    predictions = booster.predict(predict_matrix)
+    accuracy_data = _calculate_accuracy(predictions, y_test)
+    contributions_raw = booster.predict(predict_matrix, pred_contribs=True)
     contributions_df = pd.DataFrame(contributions_raw, columns=np.hstack([data.columns.values, ["bias"]]))
-    extras = {"decision_threshold": threshold, "accuracy": accuracy}
 
     result_data = ResultData(
         booster=booster,
         history=history,
         contributions=contributions_df,
-        extras=extras)
+        extras=accuracy_data,
+        cv_history=cv_result)
 
-    save_result(result_data)
+    _save_result(result_data)
     return result_data
 
 
-def calculate_accuracy(predictions, y_test) -> Tuple[float, float]:
+def make_predictions(data: pd.DataFrame, model: xgb.Booster):
+    x_data = _preprocess_data(data)
+    y_true = _make_target(x_data, periods_difference=30)
+    x_data = x_data["2022":]
+    y_true = y_true["2022":]
+    y_arr = y_true.to_numpy()
+    x_matrix = xgb.DMatrix(x_data.to_numpy())
+
+    predictions = model.predict(x_matrix)
+    accuracy_data = _calculate_accuracy(predictions, y_arr)
+    spy_30 = x_data["SPY"].shift(-30)
+    grr = pd.DataFrame({
+        "y_true": y_arr.flatten(),
+        "prob": predictions.flatten(),
+        "y_pred": predictions.flatten() > 0.5,
+        "SPY": x_data["SPY"],
+        "SPY30": spy_30.to_numpy(),
+        "CONTROL": x_data["SPY"] < spy_30,
+    }, index=x_data.index)
+    print(accuracy_data)
+
+
+def _calculate_accuracy(predictions, y_test) -> Dict[str, Any]:
     """
     Calculate the best accuracy and threshold for binary classification predictions.
 
@@ -86,16 +120,24 @@ def calculate_accuracy(predictions, y_test) -> Tuple[float, float]:
     The function calculates the accuracy for a range of thresholds and returns the threshold that
     maximizes accuracy on the provided predictions and true labels.
     """
+    y_test = y_test.flatten()
     correct_count = np.array([
-        [t, ((predictions > t) == y_test.flatten()).sum()]
-        for t in np.linspace(0.1, 1, 30)])
+        [t, np.sum((predictions > t) == y_test)]
+        for t in np.linspace(0.1, 1, 20)])
     best_i = correct_count[:, 1].argmax()
     best_accuracy = correct_count[best_i, 1] / len(predictions)
     best_threshold = correct_count[best_i, 0]
-    return best_accuracy, best_threshold
+    accuracy_50 = np.sum((predictions > 0.5) == y_test) / len(predictions)
+    accuracy_dummy = np.sum(y_test == True) / len(predictions)
+    return {
+        "best_decision_threshold": best_threshold,
+        "accuracy": best_accuracy,
+        "accuracy_50": accuracy_50,
+        "accuracy_dummy": accuracy_dummy,
+    }
 
 
-def preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None) -> pd.DataFrame:
+def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None) -> pd.DataFrame:
     """
     Preprocesses a given dataset by computing Simple Moving Averages (SMAs), relative strengths,
     and optionally resampling the data to a specified frequency.
@@ -117,7 +159,7 @@ def preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None) 
         return combined
 
 
-def make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame:
+def _make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame:
     """
     Creates a binary target variable based on the price movement of the target index.
 
@@ -135,7 +177,7 @@ def make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame:
     return y.to_frame()
 
 
-def save_result(result: ResultData):
+def _save_result(result: ResultData):
     """
     Save XGBoost model, feature contributions, extras dictionary, and training history.
 
@@ -165,11 +207,20 @@ def save_result(result: ResultData):
     plt.tight_layout()
     plt.savefig(_OUT_PATH / "train_history.png")
 
+    # Plot cross validation metrics
+    if result.cv_history is not None:
+        result.cv_history.plot()
+        plt.xlabel("Training steps")
+        plt.ylabel("CV Metrics values")
+        plt.suptitle("XGBoost Cross-Validation")
+        plt.tight_layout()
+        plt.savefig(_OUT_PATH / "cv_history.png")
+
     print(result.extras)
     print(f"Saved results to {_OUT_PATH}")
 
 
-def do_training(params: Params) -> Tuple[xgb.Booster, pd.DataFrame]:
+def _do_training(params: Params) -> Tuple[xgb.Booster, pd.DataFrame]:
     """
     Train an XGBoost model using the specified parameters.
     https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.train
@@ -198,7 +249,7 @@ def do_training(params: Params) -> Tuple[xgb.Booster, pd.DataFrame]:
     return model, history_df
 
 
-def do_cross_validation(params: Params) -> pd.DataFrame:
+def _do_cross_validation(params: Params) -> pd.DataFrame:
     """
     Perform cross-validation for an XGBoost model using the specified parameters.
     https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.cv
