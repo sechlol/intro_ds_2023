@@ -2,7 +2,7 @@ import pandas as pd
 
 import data_collection as dc
 import data_vis
-import ml.xgboost_pipeline as xgb
+from ml import super_duper_AI as ai
 
 
 def collect_data():
@@ -33,7 +33,7 @@ def main():
 
     # Run ML models and visualize results
     print("\n** ML MODEL TRAINING **")
-    model_result = xgb.run_pipeline(dataset)
+    model_result = ai.do_something(dataset)
 
     print("\n** RESULT VISUALIZATION **")
     data_vis.visualize_something(model_result.history)

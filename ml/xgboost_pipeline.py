@@ -9,10 +9,7 @@ import xgboost as xgb
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 
-from common import data_wrangling as dw
-
 _OUT_PATH = Path("out/xgboost")
-_INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"]
 _SEED = 666
 
 
@@ -36,10 +33,9 @@ class ResultData:
     cv_history: Optional[pd.DataFrame] = None
 
 
-def run_pipeline(dataset: pd.DataFrame, cross_validate: bool) -> ResultData:
-    data = _preprocess_data(dataset)
-    target = _make_target(data, periods_difference=30)
-    split = train_test_split(data.to_numpy(), target.to_numpy(), train_size=0.95, random_state=_SEED)
+def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool) -> ResultData:
+    x_data = data.to_numpy()
+    split = train_test_split(x_data, y_target, train_size=0.8, random_state=_SEED)
     x_train, x_test, y_train, y_test = split
 
     # Create model parameters
@@ -49,14 +45,14 @@ def run_pipeline(dataset: pd.DataFrame, cross_validate: bool) -> ResultData:
         params={
             "objective": "binary:logistic",
             "tree_method": "hist",
-            "max_depth": 10,
-            "min_child_weight": 5,
-            "alpha": 10,  # L1 regularization
-            "lambda": 10,  # L2 regularization
-            "gamma": 50,
-            "eta": 0.01,
+            "max_depth": 3,
+            "min_child_weight": 4,
+            # "alpha": 20,  # L1 regularization
+            # "lambda": 2,  # L2 regularization
+            # "gamma": 50,
+            "eta": 0.1,
             "eval_metric": ["error", "auc", "logloss"]},
-        boost_rounds=50,
+        boost_rounds=500,
         early_stopping_rounds=20,
         cv_folds=5,
         verbose_training=False,
@@ -84,29 +80,13 @@ def run_pipeline(dataset: pd.DataFrame, cross_validate: bool) -> ResultData:
     return result_data
 
 
-def make_predictions(data: pd.DataFrame, model: xgb.Booster):
-    x_data = _preprocess_data(data)
-    y_true = _make_target(x_data, periods_difference=30)
-    x_data = x_data["2022":]
-    y_true = y_true["2022":]
-    y_arr = y_true.to_numpy()
-    x_matrix = xgb.DMatrix(x_data.to_numpy())
-
+def make_predictions(x_data: np.ndarray, y_true: np.ndarray, model: xgb.Booster):
+    x_matrix = xgb.DMatrix(x_data)
     predictions = model.predict(x_matrix)
-    accuracy_data = _calculate_accuracy(predictions, y_arr)
-    spy_30 = x_data["SPY"].shift(-30)
-    grr = pd.DataFrame({
-        "y_true": y_arr.flatten(),
-        "prob": predictions.flatten(),
-        "y_pred": predictions.flatten() > 0.5,
-        "SPY": x_data["SPY"],
-        "SPY30": spy_30.to_numpy(),
-        "CONTROL": x_data["SPY"] < spy_30,
-    }, index=x_data.index)
-    print(accuracy_data)
+    return _calculate_accuracy(predictions, y_true)
 
 
-def _calculate_accuracy(predictions, y_test) -> Dict[str, Any]:
+def _calculate_accuracy(predictions: np.ndarray, y_test: np.ndarray) -> Dict[str, Any]:
     """
     Calculate the best accuracy and threshold for binary classification predictions.
 
@@ -135,46 +115,6 @@ def _calculate_accuracy(predictions, y_test) -> Dict[str, Any]:
         "accuracy_50": accuracy_50,
         "accuracy_dummy": accuracy_dummy,
     }
-
-
-def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None) -> pd.DataFrame:
-    """
-    Preprocesses a given dataset by computing Simple Moving Averages (SMAs), relative strengths,
-    and optionally resampling the data to a specified frequency.
-
-    Parameters:
-        dataset (pd.DataFrame): A DataFrame containing historical data for stock indices.
-        resample_freq (Optional[str]): The frequency at which to resample the data.
-            Possible values are 'W' (for weekly) and 'M' (for monthly). If None, no resampling is performed.
-
-    Returns:
-        pd.DataFrame: A preprocessed DataFrame with SMAs, relative strengths, and optional resampling.
-    """
-    smas = dw.compute_SMA(dataset, indices=_INDICES, window_lengths=[20, 50, 200])
-    rel_strengths = dw.compute_relative_strength(dataset, _INDICES)
-    combined = pd.concat([dataset, rel_strengths, smas], axis=1).dropna()
-    if resample_freq:
-        return combined.resample(resample_freq).last()
-    else:
-        return combined
-
-
-def _make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame:
-    """
-    Creates a binary target variable based on the price movement of the target index.
-
-    Parameters:
-        dataset (pd.DataFrame): A DataFrame containing historical data for stock indices.
-        periods_difference (int): The number of periods to look ahead for computing the target variable.
-            A positive value indicates looking into the future, while a negative value looks into the past.
-
-    Returns:
-        pd.DataFrame: A DataFrame containing the binary target variable.
-            - 1 indicates that the "SPY" index increased over the specified number of periods.
-            - 0 indicates that the "SPY" index either remained unchanged or decreased over the specified periods.
-    """
-    y = dataset["SPY"] < dataset["SPY"].shift(periods=-periods_difference)
-    return y.to_frame()
 
 
 def _save_result(result: ResultData):
