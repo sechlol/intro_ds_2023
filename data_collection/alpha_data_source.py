@@ -22,11 +22,9 @@ class AlphaDataSource(DataSource):
 
     def get_data(self) -> Optional[pd.DataFrame]:
         dfs = [
-            self._get_unemployment(),
-            self._get_cpi(),
-            self._get_gdp(),
             self._get_treasury_bond_yield("10year"),
-            self._get_treasury_bond_yield("2year")
+            self._get_treasury_bond_yield("2year"),
+            self.get_inflation(),
         ]
         return pd.concat(dfs, axis=1).dropna()
 
@@ -108,3 +106,7 @@ class AlphaDataSource(DataSource):
         """
         url = self._make_url("UNEMPLOYMENT")
         return self._read_df_macro(url, "unemployment")
+
+    def get_inflation(self):
+        url = self._make_url("INFLATION")
+        return self._read_df_macro(url, "inflation")

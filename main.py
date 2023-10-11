@@ -7,9 +7,9 @@ import ml.xgboost_pipeline as xgb
 
 def collect_data():
     data_sources = [
-        dc.YahooDataSource(),
-        dc.AlphaDataSource(),
         dc.FredDataSource(),
+        dc.YahooDataSource(),
+        # dc.AlphaDataSource(),
         # dc.RandomDataSource(symbols=["SP500", "XLK", "XLP", "VIX", "GDP", "CSen", "10Y", "2Y"])
     ]
 
