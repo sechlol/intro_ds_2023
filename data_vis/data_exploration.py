@@ -1,10 +1,10 @@
+from pathlib import Path
+
 import pandas as pd
 import seaborn as sb
 import matplotlib.pyplot as plt
 
-
-def explore_something(dataset: pd.DataFrame):
-    print("Much exploration! Very data! Oh Yeah!")
+_OUT_PATH = Path("out/visualizations")
 
 
 def correlation_matrix(data: pd.DataFrame) -> pd.DataFrame:
@@ -18,7 +18,9 @@ def correlation_matrix(data: pd.DataFrame) -> pd.DataFrame:
                           vmin=-1,
                           vmax=1,
                           fmt='.2f')
+
+    _OUT_PATH.mkdir(parents=True, exist_ok=True)
     plt.title('Correlation matrix')
-    plt.savefig('visualizations/correlation_matrix.png', bbox_inches='tight')
+    plt.savefig(_OUT_PATH / 'correlation_matrix.png', bbox_inches='tight')
 
     return corr_matrix

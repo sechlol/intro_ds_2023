@@ -31,7 +31,6 @@ def main():
     dataset = read_dataset()
 
     print("\n** DATA EXPLORATION **")
-    data_vis.explore_something(dataset)
     de.correlation_matrix(dataset)
 
     # Run ML models and visualize results
