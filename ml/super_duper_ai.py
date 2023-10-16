@@ -1,6 +1,8 @@
 from typing import Optional
 
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
 from common import data_wrangling as dw
 from . import xgboost_pipeline as xgb
 from . import mlp_pipeline as mlp
@@ -9,7 +11,7 @@ _INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"
 
 
 def do_something(dataset: pd.DataFrame) -> pd.DataFrame:
-    data_enriched = _preprocess_data(dataset)
+    data_enriched = _preprocess_data(dataset, scale=True)
     y_target = _make_target(data_enriched, periods_difference=20)
 
     _do_mlp(data_enriched, y_target)
@@ -44,7 +46,7 @@ def _do_xgb(data_enriched, y_target):
     print(prediction)
 
 
-def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None) -> pd.DataFrame:
+def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None, scale: bool = False) -> pd.DataFrame:
     """
     Preprocesses a given dataset by computing Simple Moving Averages (SMAs), relative strengths,
     and optionally resampling the data to a specified frequency.
@@ -60,10 +62,14 @@ def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None)
     smas = dw.compute_SMA(dataset, indices=_INDICES, window_lengths=[20, 50, 200])
     rel_strengths = dw.compute_relative_strength(dataset, _INDICES)
     combined = pd.concat([dataset, rel_strengths, smas], axis=1).dropna()
+
     if resample_freq:
-        return combined.resample(resample_freq).last()
-    else:
-        return combined
+        combined = combined.resample(resample_freq).last()
+    if scale:
+        transformed = StandardScaler().fit_transform(combined)
+        combined = pd.DataFrame(transformed, columns=combined.columns.values, index=combined.index)
+
+    return combined
 
 
 def _make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame:
