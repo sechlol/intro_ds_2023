@@ -52,3 +52,12 @@ def compute_SMA(dataset: pd.DataFrame, indices: List[str], window_lengths: List[
         for length in window_lengths]
 
     return pd.concat(rolled_datasets, axis=1).dropna()
+
+
+def compute_returns(dataset: pd.DataFrame, indices: List[str], period_difference: int):
+    """
+    Calculate relative returns on the specified period difference
+    """
+    subset = dataset[indices]
+    returns = (subset.shift(periods=-period_difference) - subset) / subset
+    return returns.add_suffix("_return")
