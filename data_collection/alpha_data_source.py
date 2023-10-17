@@ -22,9 +22,11 @@ class AlphaDataSource(DataSource):
 
     def get_data(self) -> Optional[pd.DataFrame]:
         dfs = [
-            self._get_treasury_bond_yield("10year"),
-            self._get_treasury_bond_yield("2year"),
-            self.get_inflation(),
+            self._get_technical("RSI", "SPY"),
+            self._get_technical("PPO", "SPY"),
+            self._get_technical("MOM", "SPY"),
+            self._get_technical("ROCR", "SPY"),
+            self._get_technical("ULTOSC", "SPY"),
         ]
         return pd.concat(dfs, axis=1).dropna()
 
@@ -44,7 +46,7 @@ class AlphaDataSource(DataSource):
         of available frequencies, check https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
         """
         print(f"\t- {url}")
-        df = pd.read_csv(url, parse_dates=True, index_col="timestamp")
+        df = pd.read_csv(url, parse_dates=True, index_col=0, date_format="%Y-%m-%d")
         return (df[df.index >= AlphaDataSource._OLDEST_DATE_LIMIT]
                 .resample(resample_frequency)
                 .ffill())
@@ -65,6 +67,15 @@ class AlphaDataSource(DataSource):
         """
         df = AlphaDataSource._read_df(url, resample_frequency)
         return df["close"].rename(rename_value)
+
+    @staticmethod
+    def _read_df_technical(url: str, rename_value: str, resample_frequency: Optional[str] = "B"):
+        """
+        In addition to _read_df, also renames the first column field to the specified "rename_value"
+        """
+        df = AlphaDataSource._read_df(url, resample_frequency)
+        df.rename(columns={df.columns[0]: rename_value}, inplace=True)
+        return df
 
     def _get_ticker(self, ticker: str) -> pd.DataFrame:
         """
@@ -107,6 +118,14 @@ class AlphaDataSource(DataSource):
         url = self._make_url("UNEMPLOYMENT")
         return self._read_df_macro(url, "unemployment")
 
-    def get_inflation(self):
+    def _get_inflation(self):
         url = self._make_url("INFLATION")
         return self._read_df_macro(url, "inflation")
+
+    def _get_technical(self, function: str, symbol: str):
+        url = self._make_url(function, interval="daily", params={
+            "symbol": symbol,
+            "series_type": "close",
+            "time_period": 60
+        })
+        return self._read_df_technical(url, rename_value=f"{symbol}_{function}")

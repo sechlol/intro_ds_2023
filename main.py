@@ -5,22 +5,24 @@ import data_vis
 
 import ml.super_duper_ai as ai
 
+_DATASET_PATH = "out/dataset.csv"
+
 
 def collect_data():
     data_sources = [
-        dc.YahooDataSource(),
-        dc.FredDataSource(),
+        dc.CsvDataSource(path=_DATASET_PATH),
+        # dc.YahooDataSource(),
+        # dc.FredDataSource(),
         # dc.AlphaDataSource(),
-        # dc.RandomDataSource(symbols=["SP500", "XLK", "XLP", "VIX", "GDP", "CSen", "10Y", "2Y"])
     ]
 
     dataset = dc.aggregate_sources(data_sources)
-    dataset.to_csv("out/dataset.csv", float_format='%.2f')
+    dataset.to_csv(_DATASET_PATH, float_format='%.2f')
     return dataset
 
 
 def read_dataset():
-    return pd.read_csv("out/dataset.csv", index_col=0, parse_dates=True)
+    return pd.read_csv(_DATASET_PATH, index_col=0, parse_dates=True)
 
 
 def main():
@@ -29,9 +31,9 @@ def main():
     # dataset = collect_data()
     dataset = read_dataset()
 
-    # print("\n** DATA EXPLORATION **")
-    # data_vis.correlation_matrix(dataset)
-    # return
+    print("\n** DATA EXPLORATION **")
+    de.correlation_matrix(dataset)
+    de.relative_returns(dataset)
 
     # Run ML models and visualize results
     print("\n** ML MODEL TRAINING **")

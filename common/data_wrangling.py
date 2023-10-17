@@ -28,8 +28,8 @@ def compute_relative_strength(dataset: pd.DataFrame, indices: List[str]) -> pd.D
     # Create a DataFrame from the relative strength dictionary
     df = pd.DataFrame(relative_strengths)
 
-    # Normalize relative strength values to the range [0, 1]
-    return (df - df.min()) / (df.max() - df.min())
+    # Standardize relative strength to 0 mean and unit variance
+    return (df - df.mean()) / df.std()
 
 
 def compute_SMA(dataset: pd.DataFrame, indices: List[str], window_lengths: List[int]) -> pd.DataFrame:
@@ -52,3 +52,13 @@ def compute_SMA(dataset: pd.DataFrame, indices: List[str], window_lengths: List[
         for length in window_lengths]
 
     return pd.concat(rolled_datasets, axis=1).dropna()
+
+
+def compute_returns(dataset: pd.DataFrame, indices: List[str], period_difference: int):
+    """
+    Calculate relative returns on the specified period difference
+    """
+    subset = dataset[indices]
+    shifted = subset.shift(periods=period_difference)
+    returns = (subset - shifted) / shifted
+    return returns.add_suffix("_return").dropna()
