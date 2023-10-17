@@ -59,5 +59,6 @@ def compute_returns(dataset: pd.DataFrame, indices: List[str], period_difference
     Calculate relative returns on the specified period difference
     """
     subset = dataset[indices]
-    returns = (subset.shift(periods=-period_difference) - subset) / subset
-    return returns.add_suffix("_return")
+    shifted = subset.shift(periods=period_difference)
+    returns = (subset - shifted) / shifted
+    return returns.add_suffix("_return").dropna()
