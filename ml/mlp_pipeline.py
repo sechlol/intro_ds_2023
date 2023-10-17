@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -59,7 +59,7 @@ def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool)
     return results
 
 
-def make_predictions(x_data: np.ndarray, y_true: np.ndarray, model: neural_network.MLPClassifier):
+def make_predictions(x_data: np.ndarray, y_true: np.ndarray, model: neural_network.MLPClassifier) -> Dict[str, Any]:
     predictions = model.predict_proba(x_data)
     return calculate_accuracy(predictions[:, 1], y_true)
 

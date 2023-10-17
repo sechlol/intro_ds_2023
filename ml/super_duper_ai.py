@@ -6,20 +6,34 @@ from sklearn.preprocessing import StandardScaler
 from common import data_wrangling as dw
 from . import xgboost_pipeline as xgb
 from . import mlp_pipeline as mlp
+from . import lstm_pipeline as lstm
 
 _INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"]
 
 
 def do_something(dataset: pd.DataFrame) -> pd.DataFrame:
-    data_enriched = _preprocess_data(dataset, scale=True)
+    data_enriched = _preprocess_data(dataset, scale=False)
     y_target = _make_target(data_enriched, periods_difference=20)
 
-    _do_mlp(data_enriched, y_target)
-    print()
-    _do_xgb(data_enriched, y_target)
+    _do_lstm(data_enriched, y_target)
+    # _do_mlp(data_enriched, y_target)
+    # print()
+    # _do_xgb(data_enriched, y_target)
 
     # Return empty result for now.
     return pd.DataFrame()
+
+
+def _do_lstm(data_enriched, y_target):
+    print("*** LSTM pipeline *** ")
+    x_pre_2022 = data_enriched[:"2021"]
+    y_pre_2022 = y_target[:"2021"].to_numpy()
+    x_post_2022 = data_enriched["2022":].to_numpy()
+    y_post_2022 = y_target["2022":].to_numpy()
+
+    train_result = lstm.run_pipeline(x_pre_2022, y_pre_2022)
+    prediction = lstm.make_predictions(x_post_2022, y_post_2022, train_result.model)
+    print(prediction)
 
 
 def _do_mlp(data_enriched, y_target):
