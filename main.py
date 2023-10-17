@@ -11,10 +11,10 @@ _DATASET_PATH = "out/dataset.csv"
 
 def collect_data():
     data_sources = [
-        dc.YahooDataSource(),
-        dc.FredDataSource(),
+        dc.CsvDataSource(path=_DATASET_PATH),
+        # dc.YahooDataSource(),
+        # dc.FredDataSource(),
         # dc.AlphaDataSource(),
-        # dc.RandomDataSource(symbols=["SP500", "XLK", "XLP", "VIX", "GDP", "CSen", "10Y", "2Y"])
     ]
 
     dataset = dc.aggregate_sources(data_sources)
