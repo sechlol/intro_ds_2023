@@ -6,6 +6,8 @@ import data_vis
 import data_vis.data_exploration as de
 import ml.super_duper_ai as ai
 
+_DATASET_PATH = "out/dataset.csv"
+
 
 def collect_data():
     data_sources = [
@@ -16,12 +18,12 @@ def collect_data():
     ]
 
     dataset = dc.aggregate_sources(data_sources)
-    dataset.to_csv("out/dataset.csv", float_format='%.2f')
+    dataset.to_csv(_DATASET_PATH, float_format='%.2f')
     return dataset
 
 
 def read_dataset():
-    return pd.read_csv("out/dataset.csv", index_col=0, parse_dates=True)
+    return pd.read_csv(_DATASET_PATH, index_col=0, parse_dates=True)
 
 
 def main():
@@ -31,8 +33,8 @@ def main():
     dataset = read_dataset()
 
     print("\n** DATA EXPLORATION **")
-    data_vis.explore_something(dataset)
     de.correlation_matrix(dataset)
+    de.relative_returns(dataset)
 
     # Run ML models and visualize results
     print("\n** ML MODEL TRAINING **")
