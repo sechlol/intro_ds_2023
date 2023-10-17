@@ -52,3 +52,66 @@ def compute_SMA(dataset: pd.DataFrame, indices: List[str], window_lengths: List[
         for length in window_lengths]
 
     return pd.concat(rolled_datasets, axis=1).dropna()
+
+def momentum(dataset: pd.DataFrame, indices: List[str], interval: int) -> pd.DataFrame:
+    """
+        Compute momentum, that is rate of change in the returns of an index
+    """
+    momentum = dataset[indices].copy()
+    for col_name in indices:
+        momentum = (dataset - dataset.shift(interval)) / dataset.shift(interval) * 100
+    momentum.fillna(method='bfill', inplace=True)
+    momentum = momentum.add_suffix(f"_MOM")
+    return momentum
+
+
+
+from sklearn.preprocessing import MinMaxScaler
+
+
+def diy_lei(dataset: pd.DataFrame) -> pd.DataFrame:
+    """"
+         Calculate an idex of leading indicators, mimicking the Conference Board LEI: https://www.conference-board.org/topics/business-cycle-indicators/press/us-lei-nov-2021
+         Calculate our own LEI:
+         sum all the indicators, normalize, for each data point in time:
+    """
+
+    leading_indicators = ['SPY', 'T10Y2Y', 'T10Y3M', 'PAYEMS', 'ICSA', 'UMCSENT', 'UMDMNO', 'PPIACO', 'AWHMAN',
+                          'NEWORDER', 'ACOGNO']
+
+    data_scaled = pd.DataFrame(index=dataset.index)
+
+    scaler = MinMaxScaler()  # default=(0, 1)
+
+    for indicator in leading_indicators:
+        data_scaled[indicator] = scaler.fit_transform(dataset[[indicator]]).flatten()
+
+    # Creating a composite indicator as a sum of all scaled indicators
+    lei_values = data_scaled.sum(axis=1)
+    diy_lei = pd.DataFrame({
+        'DIY LEI': lei_values
+    })
+    return diy_lei
+
+
+def diy_lag(dataset: pd.DataFrame) -> pd.DataFrame:
+    """"
+         Calculate an index of lagging indicators, loosely inspired by the Conference Board LAG: https://www.conference-board.org/topics/business-cycle-indicators/press/us-lei-nov-2021
+         Maybe we have to average, think about that. Not sure.
+    """
+
+    lagging_indicators = ['GDPC1', 'UNRATE', 'FEDFUNDS', 'CPIAUCSL']
+    data_scaled = pd.DataFrame(index=dataset.index)
+
+    scaler = MinMaxScaler()  # default=(0, 1)
+
+    for indicator in lagging_indicators:
+        data_scaled[indicator] = scaler.fit_transform(dataset[[indicator]]).flatten()
+
+    # Creating a composite indicator as a sum of all scaled indicators
+    lag_values = data_scaled.sum(axis=1)
+    diy_lag = pd.DataFrame({
+        'DIY LAG': lag_values
+    })
+    return diy_lag
+

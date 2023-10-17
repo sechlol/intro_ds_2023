@@ -4,7 +4,11 @@ import data_collection as dc
 import data_vis
 
 import data_vis.data_exploration as de
+import data_vis.result_visualization as rv
 import ml.super_duper_ai as ai
+import matplotlib
+matplotlib.use("Qt5Agg")
+import matplotlib.pyplot as plt
 
 
 def collect_data():
@@ -30,16 +34,16 @@ def main():
     # dataset = collect_data()
     dataset = read_dataset()
 
-    print("\n** DATA EXPLORATION **")
-    data_vis.explore_something(dataset)
-    de.correlation_matrix(dataset)
+    #print("\n** DATA EXPLORATION **")
+    #data_vis.explore_something(dataset)
+    #de.correlation_matrix(dataset)
 
     # Run ML models and visualize results
-    print("\n** ML MODEL TRAINING **")
-    model_result = ai.do_something(dataset)
+    #print("\n** ML MODEL TRAINING **")
+    #model_result = ai.do_something(dataset)
 
     print("\n** RESULT VISUALIZATION **")
-    data_vis.visualize_something(model_result.history)
+    rv.test_plot(dataset)
 
 
 if __name__ == "__main__":

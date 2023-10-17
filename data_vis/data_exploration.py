@@ -22,3 +22,5 @@ def correlation_matrix(data: pd.DataFrame) -> pd.DataFrame:
     plt.savefig('visualizations/correlation_matrix.png', bbox_inches='tight')
 
     return corr_matrix
+
+

@@ -64,3 +64,25 @@ def aggregate_sources(data_sources: List[DataSource]) -> pd.DataFrame:
     all_data = _collect_from_sources(data_sources)
     joint_data = _aggregate(all_data)
     return joint_data
+
+
+def aggregate_calcs(dataset: pd.DataFrame) -> pd.DataFrame:
+    """""
+     Not sure if necessary, but now it's here.
+     Make a data frame with the computed indicators.
+     Simple Moving Average, Momentum, DIY LEI, DIY LAG
+    """""
+    all_indices = dataset.columns.tolist()
+
+    # Calculating indicators
+    sma_df = compute_SMA(dataset, all_indices, [50])
+    momentum_df = momentum(dataset, all_indices, 5)
+    diy_lei_df = diy_lei(dataset)
+    diy_lag_df = diy_lag(dataset)
+
+    # Concatenating all calculated DataFrames along columns
+    joint_data = pd.concat([sma_df, momentum_df, diy_lei_df, diy_lag_df], axis=1)
+
+    joint_data_clean = joint_data.dropna()
+
+    return joint_data_clean
