@@ -12,13 +12,13 @@ _INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"
 
 
 def do_something(dataset: pd.DataFrame) -> pd.DataFrame:
-    data_enriched = _preprocess_data(dataset, scale=False)
-    y_target = _make_target(data_enriched, periods_difference=20)
+    data_enriched = _preprocess_data(dataset, scale=True)
+    y_target = _make_target(data_enriched, feature="SPY", periods_difference=20)
 
-    _do_lstm(data_enriched, y_target)
-    # _do_mlp(data_enriched, y_target)
-    # print()
-    # _do_xgb(data_enriched, y_target)
+    #_do_lstm(data_enriched, y_target)
+    _do_mlp(data_enriched, y_target)
+    print()
+    _do_xgb(data_enriched, y_target)
 
     # Return empty result for now.
     return pd.DataFrame()
@@ -73,9 +73,16 @@ def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None,
     Returns:
         pd.DataFrame: A preprocessed DataFrame with SMAs, relative strengths, and optional resampling.
     """
-    smas = dw.compute_SMA(dataset, indices=_INDICES, window_lengths=[20, 50, 200])
+    periods = [20, 50, 200]
+    smas = dw.compute_SMA(dataset, indices=_INDICES, window_lengths=periods)
     rel_strengths = dw.compute_relative_strength(dataset, _INDICES)
-    combined = pd.concat([dataset, rel_strengths, smas], axis=1).dropna()
+    rel_returns = dw.compute_returns(dataset, _INDICES, period_differences=periods)
+
+    # Keep only SPY from the original prices. Discard all the others
+    combined = (pd
+                .concat([dataset, smas, rel_returns, rel_strengths], axis=1)
+                .dropna()
+                .drop(columns=_INDICES[1:]))
 
     if resample_freq:
         combined = combined.resample(resample_freq).last()
@@ -86,7 +93,7 @@ def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None,
     return combined
 
 
-def _make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame:
+def _make_target(dataset: pd.DataFrame, feature: str, periods_difference: int) -> pd.DataFrame:
     """
     Creates a binary target variable based on the price movement of the target index.
 
@@ -100,5 +107,5 @@ def _make_target(dataset: pd.DataFrame, periods_difference: int) -> pd.DataFrame
             - 1 indicates that the "SPY" index increased over the specified number of periods.
             - 0 indicates that the "SPY" index either remained unchanged or decreased over the specified periods.
     """
-    y = dataset["SPY"] < dataset["SPY"].shift(periods=-periods_difference)
+    y = dataset[feature] < dataset[feature].shift(periods=-periods_difference)
     return y.to_frame()

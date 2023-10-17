@@ -3,6 +3,7 @@ import pandas as pd
 import data_collection as dc
 import data_vis
 
+import data_vis.data_exploration as de
 import ml.super_duper_ai as ai
 
 _DATASET_PATH = "out/dataset.csv"
