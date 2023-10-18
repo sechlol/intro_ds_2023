@@ -12,13 +12,14 @@ _INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"
 
 
 def do_something(dataset: pd.DataFrame) -> pd.DataFrame:
-    data_enriched = _preprocess_data(dataset, scale=True)
-    y_target = _make_target(data_enriched, feature="SPY", periods_difference=20)
+    predict_ahead = 10
+    data_enriched = _preprocess_data(dataset, predict_ahead, scale=True)
+    y_target = _make_target(data_enriched, feature="SPY", periods_difference=predict_ahead)
 
-    #_do_lstm(data_enriched, y_target)
-    _do_mlp(data_enriched, y_target)
-    print()
-    _do_xgb(data_enriched, y_target)
+    _do_lstm(data_enriched, y_target)
+    # _do_mlp(data_enriched, y_target)
+    # print()
+    # _do_xgb(data_enriched, y_target)
 
     # Return empty result for now.
     return pd.DataFrame()
@@ -31,9 +32,9 @@ def _do_lstm(data_enriched, y_target):
     x_post_2022 = data_enriched["2022":].to_numpy()
     y_post_2022 = y_target["2022":].to_numpy()
 
-    train_result = lstm.run_pipeline(x_pre_2022, y_pre_2022)
-    prediction = lstm.make_predictions(x_post_2022, y_post_2022, train_result.model)
-    print(prediction)
+    model = lstm.run_pipeline(x_pre_2022, y_pre_2022)
+    result = lstm.make_predictions(x_post_2022, y_post_2022, model)
+    lstm.save_result(result, split=(x_pre_2022, x_post_2022, y_pre_2022, y_post_2022))
 
 
 def _do_mlp(data_enriched, y_target):
@@ -60,7 +61,11 @@ def _do_xgb(data_enriched, y_target):
     print(prediction)
 
 
-def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None, scale: bool = False) -> pd.DataFrame:
+def _preprocess_data(
+        dataset: pd.DataFrame,
+        predict_ahead: int,
+        resample_freq: Optional[str] = None,
+        scale: bool = False) -> pd.DataFrame:
     """
     Preprocesses a given dataset by computing Simple Moving Averages (SMAs), relative strengths,
     and optionally resampling the data to a specified frequency.
@@ -73,10 +78,9 @@ def _preprocess_data(dataset: pd.DataFrame, resample_freq: Optional[str] = None,
     Returns:
         pd.DataFrame: A preprocessed DataFrame with SMAs, relative strengths, and optional resampling.
     """
-    periods = [20, 50, 200]
-    smas = dw.compute_SMA(dataset, indices=_INDICES, window_lengths=periods)
+    smas = dw.compute_SMA(dataset, indices=_INDICES, window_lengths=[20, 50, 200])
     rel_strengths = dw.compute_relative_strength(dataset, _INDICES)
-    rel_returns = dw.compute_returns(dataset, _INDICES, period_differences=periods)
+    rel_returns = dw.compute_returns(dataset, _INDICES, period_differences=[predict_ahead, 20, 50, 200])
 
     # Keep only SPY from the original prices. Discard all the others
     combined = (pd
