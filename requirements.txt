@@ -1,0 +1,10 @@
+numpy 
+pandas
+requests
+yfinance
+matplotlib
+seaborn
+scikit-learn
+xgboost
+tensorflow
+keras
