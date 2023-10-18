@@ -29,7 +29,7 @@ def correlation_matrix(data: pd.DataFrame) -> pd.DataFrame:
 
 def relative_returns(dataset: pd.DataFrame, period_days: int = 30):
     indices = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"]
-    returns = dw.compute_returns(dataset, indices, period_days)
+    returns = dw.compute_returns(dataset, indices, [period_days])
 
     fig, axes = plt.subplots(5, len(indices)//5, figsize=(20, 15))
     fig.suptitle(f"Relative return at {period_days} days for indices, in %")

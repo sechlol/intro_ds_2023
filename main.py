@@ -40,8 +40,8 @@ def main():
     print("\n** ML MODEL TRAINING **")
     model_result = ai.do_something(dataset)
 
-    print("\n** RESULT VISUALIZATION **")
-    data_vis.visualize_something(model_result.history)
+    # print("\n** RESULT VISUALIZATION **")
+    # data_vis.visualize_something(model_result.history)
 
 
 if __name__ == "__main__":
