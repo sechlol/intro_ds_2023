@@ -35,10 +35,11 @@ def main():
     print("\n** DATA EXPLORATION **")
     de.correlation_matrix(dataset)
     de.relative_returns(dataset)
+    de.correlation_slider(dataset, 'XLE', 'XLY')
 
     # Run ML models and visualize results
     print("\n** ML MODEL TRAINING **")
-    model_result = ai.do_something(dataset)
+    #model_result = ai.do_something(dataset)
 
     # print("\n** RESULT VISUALIZATION **")
     # data_vis.visualize_something(model_result.history)
