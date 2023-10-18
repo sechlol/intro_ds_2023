@@ -32,9 +32,9 @@ def _do_lstm(data_enriched, y_target):
     x_post_2022 = data_enriched["2022":].to_numpy()
     y_post_2022 = y_target["2022":].to_numpy()
 
-    model = lstm.run_pipeline(x_pre_2022, y_pre_2022)
+    model, history = lstm.run_pipeline(x_pre_2022, y_pre_2022)
     result = lstm.make_predictions(x_post_2022, y_post_2022, model)
-    lstm.save_result(result, split=(x_pre_2022, x_post_2022, y_pre_2022, y_post_2022))
+    lstm.save_result(result, history, split=(x_pre_2022, x_post_2022, y_pre_2022, y_post_2022))
 
 
 def _do_mlp(data_enriched, y_target):
