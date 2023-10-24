@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from plotly.subplots import make_subplots
 
-from common.data_wrangling import compute_relative_strength, compute_SMA
+from common.data_wrangling import compute_relative_strength, compute_SMA_same_shape
 from data_collection import yahoo_data_source
 from data_collection import fred_data_source
 from main import collect_data
@@ -29,7 +29,7 @@ def RS_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end
     window_lengths = [30, 90, 180]
 
     relative_strength_data = compute_relative_strength(dataset, indices)
-    sma_data = compute_SMA(dataset, indices, window_lengths)
+    sma_data = compute_SMA_same_shape(dataset, indices, window_lengths)
     directory = r"C:\Users\elvad\Documents\Intro_to_DS"
     file_name = f'plot_{"_".join(indices)}.html'
     file_path = os.path.join(directory, file_name)
@@ -55,7 +55,7 @@ def RS_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end
 
 
 
-def test_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end_date: datetime, save_as_html: bool = False):
+def test_plot_s(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end_date: datetime, save_as_html: bool = False):
     """
     General plotting
     """
@@ -75,9 +75,61 @@ def test_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, e
 
     if save_as_html:
         fig.write_html(file_path)
-
     fig.show()
 
+def test_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end_date: datetime, save_as_html: bool = False):
+    """
+    General plotting
+    """
+    directory = r"C:\Users\elvad\Documents\Intro_to_DS"
+    file_name = f'plot_{"_".join(indices)}.html'
+    file_path = os.path.join(directory, file_name)
+    data = dataset.loc[start_date:end_date, indices]
+
+    with open('common/business_cycle_dates', 'r') as file:
+        lines = file.readlines()
+
+    date_ranges = []
+    for line in lines:
+        if 'peak' in line:
+            peak_date = pd.to_datetime(line.split()[1].strip('"'))
+        elif 'trough' in line:
+            trough_date = pd.to_datetime(line.split()[1].strip('"'))
+            date_ranges.append((peak_date, trough_date))
+
+    fig = go.Figure()
+    for index in indices:
+            fig.add_trace(go.Scatter(x=data.index, y=data[index], mode='lines', name=index))
+
+            # Highlight business cycle date ranges
+    highlight_ranges = date_ranges
+    for start, end in highlight_ranges:
+        fig.add_shape(
+            dict(
+                type="rect",
+                xref="x",
+                yref="paper",
+                x0=start,
+                y0=0,
+                x1=end,
+                y1=1,
+                fillcolor="grey",
+                opacity=0.3,
+                layer="below",
+                line_width=0,
+            )
+        )
+
+    fig.update_layout(
+        title=f'Time Series of {", ".join(indices)}',
+        xaxis_title='Date',
+        yaxis_title='Returns',
+    )
+
+    if save_as_html:
+        fig.write_html(file_path)
+
+    fig.show()
 def split_plot(dataset: pd.DataFrame, indices_upper: List[str], indices_lower: List[str], start_date: datetime, end_date: datetime, save_as_html: bool = False):
     directory = r"C:\Users\elvad\Documents\Intro_to_DS"
     file_name = f'split_plot_{"_".join(indices_upper + indices_lower)}.html'

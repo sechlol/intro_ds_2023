@@ -26,8 +26,13 @@ class FredDataSource(DataSource):
             "GDPC1",        # Real Gross Domestic Product
             "UNRATE",       # Unemployment rate
             "INDPRO",       # Industrial Production: Total Index
-            "T10Y2Y",       # 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity
-            "T10Y3M",       # 10-Year Treasury Constant Maturity Minus 3-Month Treasury Constant Maturity
+            "T10Y2Y",       # Yield spread: 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity
+            "T10Y3M",       # Yield-spread: 10-Year Treasury Constant Maturity Minus 3-Month Treasury Constant Maturity
+            "BAMLH0A0HYM2", # Yield spread: ICE BofA US High Yield Index Option-Adjusted Spread
+            "DGS1MO",       # Bond Yield: Month Treasury Constant Maturity Rate
+            "DGS2",         # Bond Yield: 2-Year Treasury Constant Maturity Rate
+            "DGS10",        # Bond Yield: Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis
+            "DGS30",        # Bond Yield: 30-Year Treasury Constant Maturity Rate
             "PAYEMS",       # All Employees, Total Nonfarm
             "ICSA",         # Initial Jobless Claims
             "UMCSENT",      # Consumer Sentiment, University of Michigan
@@ -41,6 +46,7 @@ class FredDataSource(DataSource):
             "NEWORDER",     # Manufacturers' New Orders: Nondefense Capital Goods Excluding Aircraft
             "ACOGNO",       # Manufacturers' New Orders: Consumer Goods
             "CES4348400001",    # All Employees, Truck Transportation
+
             # "WPU10210501",    # Gold Ore: Producer Price Index by Commodity: Metals and Metal Products
             # "AWHAETP",        # Average weekly hours of All Employees, Total Private
             # "M08297USM548NNBR"    # Initial Claims, Unemployment Insurance, State Programs for United States

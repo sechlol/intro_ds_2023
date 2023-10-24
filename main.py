@@ -21,18 +21,19 @@ def collect_data():
     ]
 
     dataset = dc.aggregate_sources(data_sources)
-    dataset.to_csv("out/dataset.csv", float_format='%.2f')
+    dataset.to_csv("dataset_new.csv", float_format='%.2f')
     return dataset
 
 
 def read_dataset():
-    return pd.read_csv("out/dataset.csv", index_col=0, parse_dates=True)
+    return pd.read_csv("dataset_new.csv", index_col=0, parse_dates=True)
 
 def my_main():
     credit_crisis_0 = datetime(2007, 1,1)
     credit_crisis_1 = datetime(2009,12,31)
     pandemic_0 = datetime(2019,1,1)
     pandemic_1 = datetime(2023,10,10)
+    #dataset = collect_data()
     dataset = read_dataset()
     indicators_df = dw.aggregate_calcs(dataset)
     all_data = dw.all_data(dataset)
@@ -53,8 +54,8 @@ def my_main():
     #all_indices = dataset.columns.tolist()
     #print(dw.forward_indicator(dataset,all_indices, 7))
     #print(all_data['SPY_MOM'])
-    #dv.result_visualization.test_plot(all_data, ['SPY_MOM'],'01-01-1999', '10-10-2023')
-    rv.split_plot(all_data, ['SPY_FORW_90'], ['SPY_MOM'],'01-01-1998', '10-10-2023', False)
+    #dv.result_visualization.test_plot(all_data, ['DGS1MO', 'DGS10', 'DGS30','BAMLH0A0HYM2'],'01-01-1999', '10-10-2023')
+    #rv.split_plot(all_data, ['SPY_FORW_90'], ['SPY_MOM'],'01-01-1998', '10-10-2023', False)
 
 
 def main():

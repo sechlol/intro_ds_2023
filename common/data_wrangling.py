@@ -2,7 +2,7 @@ from itertools import combinations
 from typing import List
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-from main import read_dataset
+
 def compute_relative_strength(dataset: pd.DataFrame, indices: List[str]) -> pd.DataFrame:
     """
         Calculate relative strengths between stock indices. The algorithm will choose subsequent
@@ -125,7 +125,7 @@ def aggregate_calcs(dataset: pd.DataFrame) -> pd.DataFrame:
     return joint_data_clean
 
 
-def all_data(dataset = read_dataset()) -> pd.DataFrame:
+def all_data(dataset) -> pd.DataFrame:
     df_indicators = aggregate_calcs(dataset)
     all_indices = dataset.columns.tolist()
     indices_inds = df_indicators.columns.tolist()
