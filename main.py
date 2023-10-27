@@ -4,6 +4,7 @@ import data_collection as dc
 import data_vis
 
 import data_vis.data_exploration as de
+import data_vis.minimum_spanning_tree as mst
 import ml.super_duper_ai as ai
 
 _DATASET_PATH = "out/dataset.csv"
@@ -36,6 +37,7 @@ def main():
     de.correlation_matrix(dataset)
     de.relative_returns(dataset)
     de.correlation_slider(dataset, 'XLE', 'XLY')
+    mst.minimum_spanning_tree(dataset, '2015-12-1', '2016-12-1')
 
     # Run ML models and visualize results
     print("\n** ML MODEL TRAINING **")
