@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Walrus Co. Data Science Project Blog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Walrus Co. Data Science Project Blog</h1>
+    </header>
+
+    <article>
+        <h2>Data Science Project Title</h2>
+        <p>
+       The VIX
+
+The Chicago Board of Exchange (CBOE) volatility index, known as the VIX among friends, is a measure of the volatility of the S&P 500 (SPX) index in the next 30 days, i.e. the fluctuations in price. It is a leading indicator, reflecting investor sentiment, indeed it is often referred to as the “fear index”, because it affects investors actions in the market, if volatility is high, investors will be more cautious and vice versa.
+The VIX is calculated in real time by the CBOE comparing strike prices of standard SPX options (expiring on the third Friday of each month) and weekly options (expiring on all other Fridays).
+The VIX can even be traded through derivative products, like options and futures. It is a good tool for portfolio diversification and hedging, because it is known to have a strong negative correlation with the SPX. So when the markets are down, the VIX is up.
+
+[1] https://www.investopedia.com/news/what-does-volatility-index-vix-indicate/
+[2] https://www.sfu.ca/~poitras/419_VIX.pdf
+
+
+
+<h3>Business cycles</h3>
+
+The economy is usually expanding, although sometimes recessions come. These are short lasted, but it may take some time for the economy to return to its previous level of activity.
+The economy is said to move in cycles of expansion and contraction, these are called business cycles.
+The economy expands, until it reaches a peak, then it contracts, in what is usually referred to as a recession, until it reaches the trough of the cycle. During the expansion consumption, investment, employment and imports rise. When the peak is reached the economy is usually in an overheated state, and inflationary pressures are present. At some point there will be a move to recession, the contraction part of the cycle. This will be reflected in a cooling economy, production and income will fall, leading to a fall in consumption and investment. Eventually the trough will be reached, economic activity will be low, low investment, incomes, consumption, deflation. These moves can be tracked with various economic indicators such as the GDP, the unemployment rate, the consumer price index, the industrial production, the total non-farm payroll (the farm payroll is not accounted for, because agriculture is somewhat detached from the economy, it is more dependent on meteorological conditions) and the stock market. The average duration of a business cycle is 5,5 years. But this varies a lot. In average the period of expansion is 58 months whereas the recession and trough is 11 months.
+Knowing these basic facts about the economy we can gauge the state of it looking at indicators.
+<iframe src="C:\Users\elvad\Documents\GitHub\intro_ds_2023\data_vis\split_plot_SPY_DCOILWTICO_VIXCLS_UNRATE.html" width="600" height="400"></iframe>
+
+From this plot we can see the correlated moves of the S&P 500, West Texas intermediate crude oil prices (WTI), the volatility index (VIX) and the unemployment rate. The S&P and WTI move together, and the VIX and unemployment move together, opposite to the first two. We can see how the volatility and the unemployment spiked during the GFC and the pandemic, when the S&P and the WTI
+
+Sources economic cycle:
+[1]https://www.nber.org/research/business-cycle-dating
+[2] Economics, Alain Anderton, 1993
+
+
+
+
+
+Plot leading and lagging indicators and markets and be like: “Oh, they’re all coincident, wtf, how can we infer shit?”
+
+        </p>
+        <h4>Bond Yields and Spreads</h4>
+        <p>
+
+
+Bond yields as well as bond prices are a very important economic indicator used to monitor interest rates which will have an impact on the whole economy. They help to make decisions regarding stock choices and mortgages.
+It is known that usually bond yields have an inverse correlation to bond prices. This is because the bonds coupon payments, based on the interest rates at the time of purchase, are fixed, therefore if the interest rates rise, the older bonds will become less attractive with their lower coupon payments, this will cause the price of the older bond to fall to bring it to line with the new higher rates. There will be less demand for the lower interest rate bonds. [2]
+During periods of economic expansion bond prices usually fall, this is because interest rates go up, and because the rallying stock market will lure more investors expecting better returns than from the bond market. The stock market and the bond market end up competing for capital.
+However right after a recession, when inflationary pressures and interest rates are low bonds and stocks are more prone to move together.
+Bond yields are low when interest rates are low, this is a time when the economy can easily grow, it is a benign environment to borrow and build businesses.
+How do bond prices and bond yields behave during times of economic stress such as the 2008 credit crisis, and the pandemic?
+But what about bond yields and credit spreads. How are these moving?
+Let’s look at at plot of bond yields and credit spreads over the last twenty years. We can see that they are diverging. Maybe they have a negative correlation. Let’s plot their correlation tooo, coz it’s so coool! Yeah! Bam! Actually the correlation is mostly negative, but at times it is positive.
+We are looking at the Bank of America Merrill Lynch US High Yield Master II Index which measures the yield spread over U.S. Treasury bonds and is focused specifically on high-yield bonds. We will compare this with the US 10-year treasury bond yields. plot_DGS10_BAMLH0A0HYM2.html
+The correlation between the US-10-year yield and the spread oscillates between -1 and 0.5 on average.
+We also plot the yield and the spread together, we can see that the moves are often opposed. We notice that the highest peak in the credit spread are reached during the 2008 financial crisis, as well as in 2020, during the pandemic. In July of 2023 the spread curve crossed under the yield curve and now they seem to be rising at a similar pace.
+This has to do with the rising interest rates, which increase corporate and real estate capital costs and reduce consumer spending and also reduces corporate profitability. This may have an impact on the stock market, because the worsening of the economic conditions and the rise of the yield curve will have the effect of more investors leaving the stock market to move to safer, and now more profitable (than before) bonds.
+Indeed from plotting these three together we see that the SPY and the credit spread are negatively correlated. split_plot_SPY_DGS10_BAMLH0A0HYM2.html
+Let’s also look at Treasury bond yields as a leading indicator. Let’s plot the spread between 10-Year Treasury bond yields and 2-year T-bond yields together with the total number of non-farm employees, which is a good proxy for gauging the health of the economy.
+2axes_plot_PAYEMS_PCT_T10Y2Y.html
+The yield spread curve and the employment curve have a negative correlation. We can also see that positive changes in the slope of the yield spread curve seem to predict a positive change in employment during the dot com bubble, the GFC and the pandemic, that is, the red curve seems a to be a leading indicator of economic growth. Of course this is not enough evidence to draw any intricate conclusions, but it is an interesting observation that makes sense in a broader economic context.
+During the pandemic there was a positive reversal of the yield spread curve and right after it the economy experienced massive growth, that lasted until September of 2021. It is interesting to note that in April 2021 the yield curve slope experienced a negative reversal. So only five months later the economy commenced to decline. We can also see that in August 2021 the yield spread curve slope changed to the positive again, and in March 2022 the employment curve reversed.
+In October 2021 there was another reversal of the yield spread curve slope to the negative and, ignoring a couple of bumps, it has been following that downtrend until March 2023. We can see this reversal reflected in the employment curve in July 2023, where it seems to have reversed, or at least settled for some time. In July 2023 there was also a clear positive reversal of the yield spread, which continues to the present day, so according to this, it is likely that the US economy will enter soon a period of growth again.
+
+Sources bonds:
+[1] https://www.investopedia.com/ask/answers/061715/how-can-bond-yield-influence-stock-market.asp
+[2] https://www.finra.org/investors/investing/investment-products/bonds#buying-and-selling
+[3] https://www.aqr.com/research-archive/research/white-papers/what-drives-bond-yields
+[4] https://www.investopedia.com/articles/bonds/07/price_yield.asp
+[5] https://apolloacademy.com/credit-spreads-are-disconnected-from-credit-yields/
+[6] https://www.stlouisfed.org/on-the-economy/2021/november/comovement-credit-spreads-debt-assets-crises
+[7] https://www.stlouisfed.org/on-the-economy/2021/april/yield-curve-predictor-future-growth
+</p>
+
+        <h5>Momentum</h5>
+        <p>
+
+
+We will be looking at momentum during the dot com bubble, the credit crisis and the pandemic. We want to see how different economic indicators behave during the crisis. How it is reflected in the moves of indicators and market sectors.
+Momentum is the rate of change of an asset or indicator. It is calculated as the difference between current price (or value, in the case of another type of indicator) and price at some period of time before, like for example five days.
+Momentum is a special indicator, in some sense, its performance goes against the hypothesis of efficient markets. Nevertheless there is evidence that momentum does function as an indicator of future  performance of a market or more specifically a security. [1][1a][2] Momentum is seen as an indicator of herd behavior or market participant irrationality. [3] Although it has also been demonstrated that momentum strategies perform well in settings where market participants are rational (not prone to herd behavior) and markets are efficient.[4]
+Is momentum a leading indicator, can it give any insight on the business cycle phases? How well does the momentum of an indicator predict the future performance of this indicator?
+
+SOURCES Momentum:
+[1] https://doi.org/10.1111/j.1540-6261.1993.tb04702.x , https://espace.library.uq.edu.au/data/UQ_406166/UQ406166_OA.pdf?Expires=1698235538&Key-Pair-
+[1a] https://dx.doi.org/10.2139/ssrn.1919226
+[2]Id=APKAJKNBJ4MJBJNC6NLQ&Signature=A9t~3ekXzGbTirpYia6nxojJUvzRAOC25NwojxX3pHUfk6AxjVyiAgU-zHr0SlG9Pkx5VfDpk~O3LFfWZhVdHA5BbqjUIagpgzlMrv6Tkw8xwzJ28sZl9SCvDNCWNy3W6WkXOYy~4wjzqVc0-yzGUgtSKlxwv7r6CgmmPfiFuILfQwW4vH~mwIFFSomy76J2tgl-0ZK423etobWO8o2STwa9XCSLOYFW0sX3UQ1tbLwayhXXIg4HzeCFHFguJrwF0WzejnO~nm1RKhxWK2-42zlfOmVDd0ztv-CDQV5RUjmtfkjMk-ELRshMwo7u5LPr2esr3sflHYhPwehqJDZMcg__
+[3] https://dx.doi.org/10.2139/ssrn.2017
+[4] https://doi.org/10.1207/S15327760JPFM0204_3
+            </p>
+
+        <h6>Results and Conclusion</h6>
+        <p>
+            Summarize the results of your project and any conclusions or implications. You can also mention future work or areas for improvement.
+        </p>
+
+        <div class="author-info">
+            Written by: Your Name | Date: October 18, 2023
+        </div>
+    </article>
+</body>
+</html>

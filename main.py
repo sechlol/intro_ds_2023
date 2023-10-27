@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from datetime import datetime
+import data_vis.data_exploration as de
 import os
 import ml.time_series as ts
 def collect_data():
@@ -53,9 +54,13 @@ def my_main():
     #all_data = all_data.loc[:, ~all_data.columns.duplicated()]
     #all_indices = dataset.columns.tolist()
     #print(dw.forward_indicator(dataset,all_indices, 7))
-    #print(all_data['SPY_MOM'])
-    #dv.result_visualization.test_plot(all_data, ['DGS1MO', 'DGS10', 'DGS30','BAMLH0A0HYM2'],'01-01-1999', '10-10-2023')
-    #rv.split_plot(all_data, ['SPY_FORW_90'], ['SPY_MOM'],'01-01-1998', '10-10-2023', False)
+    #print(dataset['SPY'])
+    #dv.result_visualization.test_plot(all_data, ['T10Y2Y','PAYEMS_PCT'],'07-31-2001', '10-10-2023', False)
+    #rv.split_plot(all_data, ['SPY','DCOILWTICO', 'VIXCLS'], ['UNRATE'],'07-31-2001', '10-10-2023', True)
+    #rv.split_plot(all_data, ["SPY","XLE", "XLY", "XLF", "XLV","XLI","XLK","XLB","XLU","XLP"], ['LEI','LAG'], '07-31-2001', '10-10-2023', False)
+    #de.monthly_correlation_slider(all_data,'DGS10', 'BAMLH0A0HYM2')
+    rv.two_axes(all_data, ['PAYEMS_PCT'], ['T10Y2Y'],'06-01-2001', '10-10-2023', True)
+    # "SPY","XLE", "XLY", "XLF", "XLV","XLI","XLK","XLB","XLU","XLP"
 
 
 def main():

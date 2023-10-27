@@ -131,7 +131,8 @@ def all_data(dataset) -> pd.DataFrame:
     indices_inds = df_indicators.columns.tolist()
     forward_data_0 = forward_indicator(dataset, all_indices, 30)
     forward_data_1 = forward_indicator(df_indicators, indices_inds, 30)
-    all_data = pd.concat([dataset, df_indicators, forward_data_0, forward_data_1], axis=1)
+    pct_change = percentage_change(dataset)
+    all_data = pd.concat([dataset, df_indicators, forward_data_0, forward_data_1, pct_change], axis=1)
     all_data = all_data.loc[:, ~all_data.columns.duplicated()]
     #all_data = all_data.dropna()
     return all_data
@@ -157,3 +158,20 @@ def forward_indicator(dataset: pd.DataFrame, indices: List[str], interval: int) 
         df_forward = pd.concat([df_forward, df_for], axis=1)
     return df_forward
 
+def read_dates()-> pd.DataFrame:
+    with open('common/business_cycle_dates', 'r') as file:
+        lines = file.readlines()
+    date_ranges = []
+    for line in lines:
+        if 'peak' in line:
+            peak_date = pd.to_datetime(line.split()[1].strip('"'))
+        elif 'trough' in line:
+            trough_date = pd.to_datetime(line.split()[1].strip('"'))
+            date_ranges.append((peak_date, trough_date))
+    return date_ranges
+
+def percentage_change(dataset: pd.DataFrame)-> pd.DataFrame:
+    pct_change = (dataset - dataset.shift(365)) / dataset.shift(365) * 100
+    pct_change = pct_change.fillna(0)
+    pct_change.columns = [f'{col}_PCT' for col in pct_change.columns]
+    return pct_change
