@@ -55,12 +55,14 @@ def my_main():
     #all_indices = dataset.columns.tolist()
     #print(dw.forward_indicator(dataset,all_indices, 7))
     #print(dataset['SPY'])
-    #dv.result_visualization.test_plot(all_data, ['T10Y2Y','PAYEMS_PCT'],'07-31-2001', '10-10-2023', False)
+    #dv.result_visualization.test_plot(all_data, ['VIXCLS'],'07-31-2001', '10-10-2023', True)
     #rv.split_plot(all_data, ['SPY','DCOILWTICO', 'VIXCLS'], ['UNRATE'],'07-31-2001', '10-10-2023', True)
-    #rv.split_plot(all_data, ["SPY","XLE", "XLY", "XLF", "XLV","XLI","XLK","XLB","XLU","XLP"], ['LEI','LAG'], '07-31-2001', '10-10-2023', False)
+    #rv.split_plot(all_data, ["SPY","XLE", "XLY", "XLF", "XLV","XLI","XLK","XLB","XLU","XLP"], ['LEI','LAG'], '07-31-2001', '10-10-2023', True)
     #de.monthly_correlation_slider(all_data,'DGS10', 'BAMLH0A0HYM2')
-    rv.two_axes(all_data, ['PAYEMS_PCT'], ['T10Y2Y'],'06-01-2001', '10-10-2023', True)
+    #rv.two_axes(all_data, ['PAYEMS_PCT'], ['T10Y2Y'],'06-01-2001', '10-10-2023', True)
     # "SPY","XLE", "XLY", "XLF", "XLV","XLI","XLK","XLB","XLU","XLP"
+    #dv.result_visualization.test_plot(all_data, ['DGS10', 'BAMLH0A0HYM2'], '07-31-2001', '10-10-2023', True)
+    #rv.split_plot(all_data, ['SPY'], ['DGS10', 'BAMLH0A0HYM2'], '07-31-2001', '10-10-2023', True)
 
 
 def main():
