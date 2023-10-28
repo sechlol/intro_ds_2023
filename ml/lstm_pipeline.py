@@ -24,7 +24,7 @@ from ml.common_ml import calculate_accuracy
 _OUT_PATH = Path("out/lstm")
 _SEED = 666
 _N_STEPS = 20
-_BATCHES = 32
+_BATCHES = 64
 _EPOCHS = 20
 
 
@@ -78,9 +78,8 @@ def _get_model_simple(input_shape: Tuple[int, int]) -> Sequential:
             from_logits=False,
             label_smoothing=0.0,
             axis=-1,
-            reduction="auto",
-            name="binary_crossentropy"),
-        optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001),
+            reduction="auto"),
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.01),
         metrics=["binary_accuracy"])
 
     return model
@@ -94,7 +93,7 @@ def _get_model_simple_gru(input_shape: Tuple[int, int]) -> Sequential:
 
     model.compile(
         loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.01),
         metrics=[
             tf.keras.metrics.BinaryAccuracy(threshold=0.5)
         ])

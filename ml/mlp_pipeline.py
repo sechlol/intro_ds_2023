@@ -33,12 +33,12 @@ def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool)
         hidden_layer_sizes=100,
         max_iter=500,
         early_stopping=True,
-        validation_fraction=0.15,
+        validation_fraction=0.01,
         n_iter_no_change=20,
         shuffle=True,
         learning_rate="constant",
-        solver="adam",
-        batch_size=32,
+        solver="sgd",
+        batch_size=64,
         random_state=_SEED,
     ).fit(x_train, y_train)
 
