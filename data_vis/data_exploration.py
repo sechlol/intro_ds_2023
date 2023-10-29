@@ -8,8 +8,18 @@ from datetime import datetime
 import numpy as np
 
 from common import data_wrangling as dw
+from data_vis.minimum_spanning_tree import minimum_spanning_tree
 
 _OUT_PATH = Path("visualizations")
+
+
+def explore_data(dataset: pd.DataFrame):
+    _OUT_PATH.mkdir(parents=True, exist_ok=True)
+
+    correlation_matrix(dataset)
+    relative_returns(dataset)
+    correlation_slider(dataset, 'XLE', 'XLY')
+    minimum_spanning_tree(dataset, '2015-12-1', '2016-12-1')
 
 
 def correlation_matrix(data: pd.DataFrame) -> pd.DataFrame:
@@ -34,29 +44,29 @@ def relative_returns(dataset: pd.DataFrame, period_days: int = 30):
     indices = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"]
     returns = dw.compute_returns(dataset, indices, [period_days])
 
-    fig, axes = plt.subplots(5, len(indices)//5, figsize=(20, 15))
+    fig, axes = plt.subplots(5, len(indices) // 5, figsize=(20, 15))
     fig.suptitle(f"Relative return at {period_days} days for indices, in %")
 
     for index, ax in zip(returns, axes.flatten()):
         title = index.split("_")[0]
         ax.set(title=title)
-        sb.lineplot(returns[index]*100, ax=ax)
+        sb.lineplot(returns[index] * 100, ax=ax)
 
     fig.tight_layout()
     fig.savefig(_OUT_PATH / 'returns.png', bbox_inches='tight')
 
 
 def monthly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
-
     # Drop elements that have no daily data
     dataset = dataset.copy()
     dataset.drop(['GDPC1', 'UNRATE', 'INDPRO', 'PAYEMS', 'UMCSENT', 'FEDFUNDS', 'CPIAUCSL', 'PPIACO',
-                            'NEWORDER', 'AWHMAN', 'NEWORDER', 'ACOGNO', 'CES4348400001'],
+                  'NEWORDER', 'AWHMAN', 'NEWORDER', 'ACOGNO', 'CES4348400001'],
                  axis=1,
                  inplace=True)
 
     # Calculate the correlation
-    df_corr = dataset[[ind1, ind2]].groupby([(dataset[[ind1, ind2]].index.year), (dataset[[ind1, ind2]].index.month)]).corr()
+    df_corr = dataset[[ind1, ind2]].groupby(
+        [(dataset[[ind1, ind2]].index.year), (dataset[[ind1, ind2]].index.month)]).corr()
     corr = df_corr[ind1].to_numpy()[1::2]
 
     # Stupid stuff to get datetime.date
@@ -65,7 +75,7 @@ def monthly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
     year = [t[0] for t in times]
     month = [t[1] for t in times]
     day = np.ones(len(month), dtype=np.int8)
-    dates = [str(year[i])+'-'+str(month[i])+'-'+str(day[i]) for i in range(len(month))]
+    dates = [str(year[i]) + '-' + str(month[i]) + '-' + str(day[i]) for i in range(len(month))]
     dates = [datetime.strptime(dates[i], '%Y-%m-%d').date() for i in range(len(month))]
 
     # Create figure
@@ -77,7 +87,7 @@ def monthly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
 
     # Set title
     fig.update_layout(
-        title_text='Correlation between '+str(ind1)+' and '+str(ind2)
+        title_text='Correlation between ' + ind1 + ' and ' + ind2
     )
 
     # Add range slider
@@ -109,11 +119,10 @@ def monthly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
 
     # fig.show()
 
-    return fig.write_html('visualizations/correlation_'+str(ind1)+'_and_'+str(ind2)+'.html')
+    return fig.write_html(_OUT_PATH / f'correlation_{ind1}_and_{ind2}.html')
 
 
 def yearly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
-
     dataset = dataset.copy()
 
     # Calculate the correlation
@@ -137,7 +146,7 @@ def yearly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
 
     # Set title
     fig.update_layout(
-        title_text='Correlation between ' + str(ind1) + ' and ' + str(ind2)
+        title_text='Correlation between ' + ind1 + ' and ' + ind2
     )
 
     # Add range slider
@@ -165,7 +174,7 @@ def yearly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
 
     # fig.show()
 
-    return fig.write_html('visualizations/correlation_' + str(ind1) + '_and_' + str(ind2) + '.html')
+    return fig.write_html(_OUT_PATH / f"correlation_{ind1}_and_{ind2}.html")
 
 
 def correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
