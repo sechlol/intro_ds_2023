@@ -1,8 +1,216 @@
 ---
-title: "Quarto Basics"
+title: "Walrus Co. Data Science Project Blog"
 format:
   html:
     code-fold: true
 jupyter: python3
 ---
+## Business cycles
 
+The economy is usually expanding, although sometimes recessions come. These are short lasted, but it may take some time for the economy to return to its previous level of activity.
+
+The economy is said to move in cycles of expansion and contraction, these are called business cycles.
+
+The economy expands, until it reaches a peak, then it contracts, in what is usually referred to as a recession, until it reaches the trough of the cycle.
+During the expansion, consumption, investment, employment and imports rise.
+When the peak is reached the economy is usually in an overheated state, and inflationary pressures are present.
+At some point, there will be a move to recession, the contraction part of the cycle. This will be reflected in a cooling economy, production and income will fall, leading to a fall in consumption and investment.
+Eventually, the trough will be reached, economic activity will be low: low investment, incomes, consumption and there will be deflation.
+
+These moves can be tracked with various economic indicators such as the gross domestic product (GDP), the unemployment rate, the consumer price index, the industrial production, the total non-farm payroll/employees (the farm payroll is not accounted for, because agriculture is somewhat detached from the economy, it is more dependent on meteorological conditions) and the stock market.
+
+The average duration of a business cycle is 5,5 years. But this varies a lot. In average, the period of expansion is 58 months, whereas the recession and trough are 11 months.
+
+Knowing these basic facts about the economy, we can gauge the state of it looking at indicators.
+When we plot the performance of the S&P 500 we will be tracking it via the SPDR S&P 500 ETF Trust (SPY).
+
+<iframe src="split_plot_SPY_DCOILWTICO_VIXCLS_UNRATE.html" height="500" width="800" ></iframe>
+
+From this plot we can see the correlated moves of the S&P 500, West Texas intermediate crude oil prices (WTI), the volatility index (VIX) and the unemployment rate.
+
+The S&P 500 and WTI move together, and the VIX and unemployment rate move together, opposite to the first two. We can see how the volatility and the unemployment spiked during the great financial crisis of 2008 (GFC) and the COVID-19 pandemic, when the S&P 500 and the WTI fell considerably. Although there is an interesting uptrend in WTI that lasted well into the GFC, peaking in the summer of 2008, just before falling sharply.
+
+This strong uptrend, which was stronger indeed that the trend of the stock market, may be explained by the financialization of the commodity markets that happened in the 2000s (this is when commodities started to become more popular as investment vehicles, mainly via futures). Although opinions on this are diverging.
+
+We can also see how the liquidity pumps performed by the Federal Reserve (such as the cutting of interest rates, and large-scale purchase of debt securities to support the economy) during COVID-19 affected the stock market; it picked on an uptrend and reached all time highs around December 2021.
+
+WTI crude oil did recover as well, but its run was not as extreme. Volatility and unemployment receded as well, although the decrease in unemployment was more gradual. However, volatility settled to a new level, which is 50% higher than before COVID-19. This may be caused by several reasons, such as uncertainty and fear initiated during the pandemic, that still lingers, unstable geopolitical conditions, tight fiscal policy after COVID-19 (interest rate hikes) and the monetary policy carried out during COVID-19.
+
+It has also been shown that the VIX shows “long term memory”. Economic shocks in the past can still be felt after a long time.
+
+Sources:
+
+[1]https://www.nber.org/research/business-cycle-dating
+
+[2] Economics, Alain Anderton, 1993
+
+[3] https://www.nber.org/reporter/2014number2/financialization-commodity-markets
+
+[4] https://www.brookings.edu/articles/fed-response-to-covid19/
+
+[5] https://www.sciencedirect.com/science/article/pii/S1544612321001379
+
+
+## The VIX
+
+The Chicago Board of Exchange (CBOE) volatility index, known as the VIX among friends, is a measure of the volatility of the S&P 500 index in the next 30 days, i.e. the fluctuations in price.
+It is a leading indicator, reflecting investor sentiment; indeed it is often referred to as the “fear index”, because it affects investors’ actions in the market: if volatility is high, investors will be more cautious and vice versa.
+The VIX is calculated in real time by the CBOE comparing strike prices of standard S&P 500 options (expiring on the third Friday of each month) and weekly options (expiring on all other Fridays).
+
+The VIX can even be traded through derivative products, like options and futures. It is a good tool for portfolio diversification and hedging, because it is known to have a strong negative correlation with the S&P 500.
+So, when the markets are down, the VIX is up.
+<iframe src="plot_VIXCLS.html" height="500" width="800" title="Plot of the CBOE Volatility Index for the past twenty years."></iframe>
+
+
+Sources:
+
+[1] https://www.investopedia.com/news/what-does-volatility-index-vix-indicate/
+
+[2] https://www.sfu.ca/~poitras/419_VIX.pdf
+
+[3] Chicago Board Options Exchange, CBOE Volatility Index: VIX [VIXCLS], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/VIXCLS, October 27, 2023.
+
+
+## Bond Yields and Spreads
+
+Bond yields as well as bond prices are a very important economic indicator used to monitor interest rates, which will have an impact on the whole economy. They help to make decisions regarding stock choices and mortgages.
+
+It is known that usually bond yields have an inverse correlation to bond prices.
+This is because the bonds’ coupon payments, based on the interest rates at the time of purchase, are fixed, therefore if the interest rates rise,
+the older bonds will become less attractive with their lower coupon payments, this will cause the price of the older bond to fall to bring it to line with the new higher rates.
+There will be less demand for the lower interest rate bonds.
+
+During periods of economic expansion bond prices usually fall, this is because interest rates go up, and because the rallying stock market will lure more investors expecting better returns than from the bond market.
+The stock market and the bond market end up competing for capital.
+
+However, right after a recession, when inflationary pressures and interest rates are low, bonds and stocks are more prone to move together.
+
+Bond yields are low when interest rates are low, this is a time when the economy can easily grow, it is a benign environment to borrow and build businesses.
+
+How do bond prices and bond yields behave during times of economic stress such as the GFC and COVID-19?
+
+But what about bond yields and credit spreads. How are these moving?
+
+Let’s look at plot of bond yields and credit spreads over the last twenty years. We can see that they are diverging. Maybe they have a negative correlation.
+We are looking at the Bank of America Merrill Lynch US High Yield Master II Index, which measures the yield spread over U.S. Treasury bonds and is focused specifically on high-yield bonds. We will compare this with the US 10-year treasury bond yields.
+
+<iframe src="plot_DGS10_BAMLH0A0HYM2.html" height="500" width="800" ></iframe>
+
+We also plot the yield and the spread together; we can see that the moves are often opposed. We notice that the highest peak in the credit spread is reached during the GFC, as well as in 2020, during COVID-19.
+In July of 2023 the spread curve crossed under the yield curve, and now they seem to be rising at a similar pace.
+
+This has to do with the rising interest rates, which increase corporate and real estate capital costs and reduce consumer spending,
+and also reduce corporate profitability. This may have an impact on the stock market, because the worsening of the economic conditions and the rise of the yield curve will have the effect of more investors leaving the stock market to move to safer,
+and now more profitable (than before) bonds.
+
+Indeed, from plotting these three together, we see that the SPY and the credit spread are negatively correlated.
+
+<iframe src="split_plot_SPY_DGS10_BAMLH0A0HYM2.html" height="500" width="800" ></iframe>
+
+Let’s also look at Treasury bond yields as a leading indicator. Let’s plot the spread between 10-Year Treasury bond yields and 2-year T-bond yields together with the total number of non-farm employees, which is a good proxy for gauging the health of the economy.
+
+<iframe src="2axes_plot_PAYEMS_PCT_T10Y2Y.html" height="500" width="800" ></iframe>
+
+The yield spread curve and the employment curve have a negative correlation.
+We can also see that positive changes in the slope of the yield spread curve starting in August 2001
+seem to predict a positive change in employment starting in December 2002 (actually January 2002,
+but this is not visible in our data set), the GFC and COVID-19, that is,
+the red curve seems a to be a leading indicator of economic growth.
+Of course, this is not enough evidence to draw any intricate conclusions,
+but it is an interesting observation that makes sense in a broader economic context.
+
+During COVID-19, there was a positive reversal of the yield spread curve, and right after it,
+the economy experienced massive growth, that lasted until September of 2021.
+
+It is interesting to note that in April 2021 the yield curve slope experienced a negative reversal.
+So only five months later, the economy commenced to decline.
+We can also see that in August 2021 the yield spread curve slope changed to the positive again,
+and in March 2022 the employment curve reversed.
+
+In October 2021, there was another reversal of the yield spread curve slope to the negative and,
+ignoring a couple of bumps, it has been following that downtrend until March 2023.
+We can see this reversal reflected in the employment curve in July 2023, where it seems to have reversed,
+or at least settled for some time.
+
+In July 2023, there was also a clear positive reversal of the yield spread, which continues to the present day,
+so according to this, it is likely that the US economy will enter soon a period of growth again.
+
+Sources:
+
+[1] https://www.investopedia.com/ask/answers/061715/how-can-bond-yield-influence-stock-market.asp
+
+[2] https://www.finra.org/investors/investing/investment-products/bonds#buying-and-selling
+
+[3] https://www.aqr.com/research-archive/research/white-papers/what-drives-bond-yields
+
+[4] https://www.investopedia.com/articles/bonds/07/price_yield.asp
+
+[5] https://apolloacademy.com/credit-spreads-are-disconnected-from-credit-yields/
+
+[6] https://www.stlouisfed.org/on-the-economy/2021/november/comovement-credit-spreads-debt-assets-crises
+
+[7] https://www.stlouisfed.org/on-the-economy/2021/april/yield-curve-predictor-future-growth
+
+
+
+## All Market Indices and Leading and Lagging Indicators
+
+Most market indices are quite correlated, they follow the same trends, which are summarized by the S&P 500, which we are looking via the SPY. Although we do notice that some market indices, like for example the consumer staple index, are fairly constant.
+We also notice that the composite leading indicators (LEI) are not quite so leading compared to the stock market, which does make sense, since the stock market itself is a leading indicator, and is very fast in reacting to global macroeconomic conditions.
+The composite lagging indicators (LAG), seem to be negatively correlated with the leading indicators, which is slightly strange.
+
+<iframe src="split_plot_SPY_XLE_XLY_XLF_XLV_XLI_XLK_XLB_XLU_XLP_LEI_LAG.html" height="500" width="800" ></iframe>
+
+
+## Correlation Gives You Important Insights About the Market
+
+Correlation is a statistical measure that describes how two assets are related. It can give perspective on the overall nature of the market.
+We use Pearson correlation. The scale varies between -1 and +1.
+
+Correlation of -1 indicates a perfectly linear negative correlation and +1 indicates a perfectly linear positive correlation.
+
+Correlation of 0 indicates that there is no linear dependency between the two assets.
+
+So the higher the positive correlation, the more strongly the two assets vary together,
+and the higher the negative correlation, the more strongly they vary together but in opposite directions.
+
+
+But what concrete information do correlations give you?
+
+You might want to recognise which assets are correlated and uncorrelated with each other to assess the unsystematic risk in your portfolio.
+
+You can identify whether you have multiple assets that behave in the same way, thereby increasing your risk.
+
+You can also identify assets that show very little correlation with the assets currently in your portfolio
+and explore them as potential diversification opportunities.
+
+
+By looking at the correlation over time, you get information about the relationship between two assets over
+ different economic periods.
+
+The interactive charts below allows you to examine the rolling 1-month correlation between the S&P 500 and the
+Energy sector, i.e. XLE,
+and between the S&P 500 and the Crude Oil Prices, i.e DCOILWTICO.
+
+
+<iframe src="correlation_SPY_and_XLE.html" height="500" width="800" title="Correlation between PSY and XLE"></iframe>
+
+<iframe src="correlation_SPY_and_DCOILWTICO.html" height="500" width="800" title="Correlation between PSY and XLE"></iframe>
+
+By looking at the network of correlations, you can find out how all assets behave in relation to each other.
+This kind of network can be formed for certain periods of time.
+
+Below you can explore interactive network graphs, the first of which shows the 2007-2009 financial crisis and the second the 2020-2023 Covid-19 pandemic.
+
+From them you can easily find out:
+
+(1) Which assets show the strongest and weakest correlations with each other?
+
+(2) Annualised returns (Node sizes are proportional to the size of annualised returns and colours denote positive or negative returns).
+
+(3) Annualised volatility.
+
+
+<iframe src="min_spanning_tree_(2007-1-1-2009-12-31).html" height="850" width="815" title="Correlation between PSY and XLE"></iframe>
+
+<iframe src="min_spanning_tree_(2020-1-30-2023-5-5).html" height="850" width="815" title="Correlation between PSY and XLE"></iframe>
