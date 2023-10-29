@@ -9,7 +9,7 @@ from datetime import datetime
 import numpy as np
 import os
 from common import data_wrangling as dw
-from common.data_wrangling import read_dates
+from common.data_wrangling import get_crisis_intervals
 
 #_OUT_PATH = Path("visualizations")
 directory = r"C:\Users\elvad\Documents\Intro_to_DS"
@@ -20,7 +20,7 @@ def correlation_matrix(data: pd.DataFrame) -> pd.DataFrame:
     file_name = f'correlation_matrix.html'
     file_path = os.path.join(directory, file_name)
     corr_matrix = data.corr()
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
     # Highlight business cycle date ranges
     highlight_ranges = date_ranges
     for start, end in highlight_ranges:
@@ -61,7 +61,7 @@ def relative_returns(dataset: pd.DataFrame, period_days: int = 30):
     # THis is my own crap
     file_name = f'relative_returns_.html'
     file_path = os.path.join(directory, file_name)
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
     fig, axes = plt.subplots(5, len(indices)//5, figsize=(20, 15))
     fig.suptitle(f"Relative return at {period_days} days for indices, in %")
     # Highlight business cycle date ranges
@@ -95,7 +95,7 @@ def relative_returns(dataset: pd.DataFrame, period_days: int = 30):
 def monthly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
     file_name = f'monthly_correlation_slider_{"_".join(ind1 + ind2)}.html'
     file_path = os.path.join(directory, file_name)
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
     # Drop elements that have no daily data
     dataset = dataset.copy()
     dataset.drop(['GDPC1', 'UNRATE', 'INDPRO', 'PAYEMS', 'UMCSENT', 'FEDFUNDS', 'CPIAUCSL', 'PPIACO',
@@ -183,7 +183,7 @@ def yearly_correlation_slider(dataset: pd.DataFrame, ind1: str, ind2: str):
     file_path = os.path.join(directory, file_name)
     dataset = dataset.copy()
     # Dates of the crises
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
     # Calculate the correlation
     df_corr = dataset[[ind1, ind2]].groupby([(dataset[[ind1, ind2]].index.year)]).corr()
     corr = df_corr[ind1].to_numpy()[1::2]

@@ -1,7 +1,10 @@
+from datetime import datetime
 from itertools import combinations
-from typing import List
+from typing import List, Tuple
 import pandas as pd
+import dateutil.parser
 from sklearn.preprocessing import MinMaxScaler
+
 
 def compute_relative_strength(dataset: pd.DataFrame, indices: List[str]) -> pd.DataFrame:
     """
@@ -53,7 +56,6 @@ def compute_SMA(dataset: pd.DataFrame, indices: List[str], window_lengths: List[
     return pd.concat(rolled_datasets, axis=1).dropna()
 
 
-
 def compute_SMA_same_shape(dataset: pd.DataFrame, indices: List[str], window_lengths: List[int]) -> pd.DataFrame:
     # ATTENTION! THIS returns array with same shape
     rolled_datasets = [
@@ -72,11 +74,12 @@ def momentum(dataset: pd.DataFrame, indices: List[str], interval: int) -> pd.Dat
         Compute momentum, that is rate of change in the returns of an index
     """
 
-    momentum = (dataset / dataset.shift(interval)) -1
+    momentum = (dataset / dataset.shift(interval)) - 1
     momentum.fillna(method='bfill', inplace=True)
-    #momentum.fillna(0, inplace=True)
+    # momentum.fillna(0, inplace=True)
     momentum = momentum.add_suffix(f"_MOM")
     return momentum
+
 
 # List of leading and lagging indicators
 LEI_LAG = {
@@ -84,8 +87,10 @@ LEI_LAG = {
                            'NEWORDER', 'ACOGNO'],
     'lagging_indicators': ['GDPC1', 'UNRATE', 'FEDFUNDS', 'CPIAUCSL']
 }
+
+
 def diy_ind(dataset: pd.DataFrame, indices: List[str], name: str) -> pd.DataFrame:
-    """"
+    """
          Calculate a compound index of leading or lagging indicators, mimicking the Conference Board LEI: https://www.conference-board.org/topics/business-cycle-indicators/press/us-lei-nov-2021
          Calculate our own LEI:/LAG
          sum all the indicators, normalize, for each data point in time.
@@ -97,18 +102,19 @@ def diy_ind(dataset: pd.DataFrame, indices: List[str], name: str) -> pd.DataFram
     for indicator in indices:
         data_scaled[indicator] = scaler.fit_transform(dataset[[indicator]]).flatten()
     # Creating a composite indicator as a sum of all scaled indicators
-    ind_values = data_scaled.sum(axis = 1)
+    ind_values = data_scaled.sum(axis=1)
     diy_indicator = pd.DataFrame({
         f'{name}': ind_values
     })
     return diy_indicator
 
+
 def aggregate_calcs(dataset: pd.DataFrame) -> pd.DataFrame:
-    """""
+    """
      Not sure if necessary, but now it's here.
      Make a data frame with the computed indicators.
      Simple Moving Average, Momentum, DIY LEI, DIY LAG
-    """""
+    """
     all_indices = dataset.columns.tolist()
 
     # Calculating indicators
@@ -134,20 +140,22 @@ def all_data(dataset) -> pd.DataFrame:
     pct_change = percentage_change(dataset)
     all_data = pd.concat([dataset, df_indicators, forward_data_0, forward_data_1, pct_change], axis=1)
     all_data = all_data.loc[:, ~all_data.columns.duplicated()]
-    #all_data = all_data.dropna()
+    # all_data = all_data.dropna()
     return all_data
 
-def forward_indicator_orig(dataset: pd.DataFrame, indices: List[str], interval: int)-> pd.DataFrame:
+
+def forward_indicator_orig(dataset: pd.DataFrame, indices: List[str], interval: int) -> pd.DataFrame:
     dfs = [dataset]
     for i in [interval, interval + 30, interval + 60]:
         df_for = dataset[indices].shift(i)
-        #df_for = df_for.fillna(method='bfill')
-        #df_for = df_for.fillna(dataset[indices])
+        # df_for = df_for.fillna(method='bfill')
+        # df_for = df_for.fillna(dataset[indices])
         df_for = df_for.fillna(0)
         df_for.columns = [f'{col}_FORW_{i}' for col in df_for.columns]
         dfs.append(df_for)
     df_forward = pd.concat(dfs, axis=1, join='inner')
     return df_forward
+
 
 def forward_indicator(dataset: pd.DataFrame, indices: List[str], interval: int) -> pd.DataFrame:
     df_forward = dataset.copy()
@@ -158,19 +166,23 @@ def forward_indicator(dataset: pd.DataFrame, indices: List[str], interval: int) 
         df_forward = pd.concat([df_forward, df_for], axis=1)
     return df_forward
 
-def read_dates()-> pd.DataFrame:
-    with open('common/business_cycle_dates', 'r') as file:
-        lines = file.readlines()
-    date_ranges = []
-    for line in lines:
-        if 'peak' in line:
-            peak_date = pd.to_datetime(line.split()[1].strip('"'))
-        elif 'trough' in line:
-            trough_date = pd.to_datetime(line.split()[1].strip('"'))
-            date_ranges.append((peak_date, trough_date))
-    return date_ranges
 
-def percentage_change(dataset: pd.DataFrame)-> pd.DataFrame:
+def get_crisis_intervals() -> List[Tuple[datetime, datetime]]:
+    """
+    Business cycle dates taken from the National Bureau of Economic Research
+    https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions
+    """
+    return [
+        (dateutil.parser.parse(start), dateutil.parser.parse(end))
+        for start, end in [
+            ("2001-03-01", "2001-11-01"),
+            ("2007-12-01", "2009-06-01"),
+            ("2020-02-01", "2020-04-01"),
+        ]
+    ]
+
+
+def percentage_change(dataset: pd.DataFrame) -> pd.DataFrame:
     pct_change = (dataset - dataset.shift(365)) / dataset.shift(365) * 100
     pct_change = pct_change.fillna(0)
     pct_change.columns = [f'{col}_PCT' for col in pct_change.columns]

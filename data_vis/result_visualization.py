@@ -12,7 +12,7 @@ from data_collection import fred_data_source
 from main import collect_data
 import plotly.graph_objects as go
 from datetime import datetime
-from common.data_wrangling import read_dates
+from common.data_wrangling import get_crisis_intervals
 
 
 def visualize_something(dataset: pd.DataFrame):
@@ -27,7 +27,7 @@ def RS_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end
     """
     file_name = f'RSI_{"_".join(indices)}.html'
     window_lengths = [30, 90, 180]
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
     relative_strength_data = compute_relative_strength(dataset, indices)
     sma_data = compute_SMA_same_shape(dataset, indices, window_lengths)
     directory = r"C:\Users\elvad\Documents\Intro_to_DS"
@@ -111,7 +111,7 @@ def test_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, e
     directory_repo = r"data_vis"
     file_path_repo = os.path.join(directory_repo, file_name)
     data = dataset.loc[start_date:end_date, indices]
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
     fig = go.Figure()
     for index in indices:
             fig.add_trace(go.Scatter(x=data.index, y=data[index], mode='lines', name=index))
@@ -152,7 +152,7 @@ def split_plot(dataset: pd.DataFrame, indices_upper: List[str], indices_lower: L
     file_path = os.path.join(directory, file_name)
     directory_repo = r"data_vis"
     file_path_repo = os.path.join(directory_repo, file_name)
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
     data = dataset.loc[start_date:end_date,:]
     fig = go.Figure()
 
@@ -223,7 +223,7 @@ def two_axes(dataset: pd.DataFrame, index_1: Union[str, List[str]], index_2: Uni
     file_path_repo = os.path.join(directory_repo, file_name)
 
     # Assuming read_dates() returns a list of tuples with start and end dates
-    date_ranges = read_dates()
+    date_ranges = get_crisis_intervals()
 
     data = dataset.loc[start_date:end_date, :]
 
