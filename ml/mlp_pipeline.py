@@ -77,12 +77,12 @@ def _save_results(result: MlpResultData, model, split):
     # Plot confusion matrix of train data
     metrics.ConfusionMatrixDisplay.from_estimator(model, x_train, y_train)
     plt.suptitle("Train set confusion matrix")
-    plt.savefig(_OUT_PATH / "confusion_train.png")
+    plt.savefig(_OUT_PATH / "mlp_confusion_train.png")
 
     # Plot confusion matrix of test data
     metrics.ConfusionMatrixDisplay.from_estimator(model, x_test, y_test)
     plt.suptitle("Test set confusion matrix")
-    plt.savefig(_OUT_PATH / "confusion_test.png")
+    plt.savefig(_OUT_PATH / "mlp_confusion_test.png")
 
     with open(_OUT_PATH / "accuracy_train.json", "w") as f:
         json.dump(result.train_accuracy, f, indent=3)

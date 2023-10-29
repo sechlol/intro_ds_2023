@@ -123,7 +123,7 @@ def _save_result(result: XGBResultData, split):
     plt.ylabel("Metrics values")
     plt.suptitle("XGBoost model convergence")
     plt.tight_layout()
-    plt.savefig(_OUT_PATH / "train_history.png")
+    plt.savefig(_OUT_PATH / "xgb_train_history.png")
 
     # Plot cross validation metrics
     if result.cv_history is not None:
@@ -132,7 +132,7 @@ def _save_result(result: XGBResultData, split):
         plt.ylabel("CV Metrics values")
         plt.suptitle("XGBoost Cross-Validation")
         plt.tight_layout()
-        plt.savefig(_OUT_PATH / "cv_history.png")
+        plt.savefig(_OUT_PATH / "xgb_cv_history.png")
 
     x_train, x_test, y_train, y_test = split
     y_train_pred = result.booster.predict(xgb.DMatrix(x_train)) > 0.5
@@ -141,12 +141,12 @@ def _save_result(result: XGBResultData, split):
     # Plot confusion matrix of train data
     metrics.ConfusionMatrixDisplay.from_predictions(y_train_pred, y_train.flatten())
     plt.suptitle("Train set confusion matrix")
-    plt.savefig(_OUT_PATH / "confusion_train.png")
+    plt.savefig(_OUT_PATH / "xgb_confusion_train.png")
 
     # Plot confusion matrix of test data
     metrics.ConfusionMatrixDisplay.from_predictions(y_test_pred, y_test.flatten())
     plt.suptitle("Test set confusion matrix")
-    plt.savefig(_OUT_PATH / "confusion_test.png")
+    plt.savefig(_OUT_PATH / "xgb_confusion_test.png")
 
     print("Train Accuracy:\n", result.train_scores)
 

@@ -11,16 +11,16 @@ from . import lstm_pipeline as lstm
 _INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"]
 
 
-def do_something(dataset: pd.DataFrame) -> pd.DataFrame:
+def run_pipelines(dataset: pd.DataFrame) -> pd.DataFrame:
     predict_feature = "XLP"
     predict_ahead = 10
     data_enriched = _preprocess_data(dataset, predict_feature, predict_ahead, scale=True)
     y_target = _make_target(data_enriched, predict_feature, periods_difference=predict_ahead)
 
-    # _do_xgb(data_enriched, y_target)
-    # print()
-    # _do_mlp(data_enriched, y_target)
-    # print()
+    _do_xgb(data_enriched, y_target)
+    print()
+    _do_mlp(data_enriched, y_target)
+    print()
     _do_lstm(data_enriched, y_target)
 
     # Return empty result for now.
@@ -47,7 +47,7 @@ def _do_mlp(data_enriched, y_target):
     x_post_2022 = data_enriched["2022":].to_numpy()
     y_post_2022 = y_target["2022":].to_numpy()
 
-    train_result = mlp.run_pipeline(x_pre_2022, y_pre_2022, cross_validate=False)
+    train_result = mlp.run_pipeline(x_pre_2022, y_pre_2022, cross_validate=True)
     mlp.make_predictions(x_post_2022, y_post_2022, train_result.model)
 
 
@@ -58,7 +58,7 @@ def _do_xgb(data_enriched, y_target):
     x_post_2022 = data_enriched["2022":].to_numpy()
     y_post_2022 = y_target["2022":].to_numpy()
 
-    train_result = xgb.run_pipeline(x_pre_2022, y_pre_2022, cross_validate=False)
+    train_result = xgb.run_pipeline(x_pre_2022, y_pre_2022, cross_validate=True)
     xgb.make_predictions(x_post_2022, y_post_2022, train_result.booster)
 
 

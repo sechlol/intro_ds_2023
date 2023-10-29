@@ -139,7 +139,7 @@ def save_result(train_data: LstmResultData, test_data: LstmResultData, history: 
     plt.ylabel("Metrics")
     plt.xticks(history.epoch)
     plt.suptitle("LSTM training history")
-    plt.savefig(_OUT_PATH / "history.png")
+    plt.savefig(_OUT_PATH / "gru_history.png")
 
     x_train, x_test, y_train, y_test = _split_train_test(split)
     y_train_pred = test_data.model.predict(x_train) > 0.5
@@ -148,12 +148,12 @@ def save_result(train_data: LstmResultData, test_data: LstmResultData, history: 
     # Plot confusion matrix of train data
     metrics.ConfusionMatrixDisplay.from_predictions(y_train_pred, y_train.flatten())
     plt.suptitle("Train set confusion matrix")
-    plt.savefig(_OUT_PATH / "confusion_train.png")
+    plt.savefig(_OUT_PATH / "gru_confusion_train.png")
 
     # Plot confusion matrix of test data
     metrics.ConfusionMatrixDisplay.from_predictions(y_test_pred, y_test.flatten())
     plt.suptitle("Test set confusion matrix")
-    plt.savefig(_OUT_PATH / "confusion_test.png")
+    plt.savefig(_OUT_PATH / "gru_confusion_test.png")
 
     print("Train Accuracy:\n", train_data.accuracy)
     print("Test Accuracy:\n", test_data.accuracy)
