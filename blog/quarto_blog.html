@@ -6,8 +6,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Christian Cardin">
+<meta name="author" content="Elva Granados Escartin">
+<meta name="author" content="Julia Pukarinen">
+<meta name="dcterms.date" content="2023-10-30">
 
-<title>Walrus Co.&nbsp;Data Science Project Blog</title>
+<title>Walrus Co.</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -34,48 +38,62 @@ ul.task-list li input[type="checkbox"] {
 <link href="quarto_blog_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="quarto_blog_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
 <body class="fullcontent">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Walrus Co.&nbsp;Data Science Project Blog</h1>
-</div>
-
-
-
-<div class="quarto-title-meta">
-
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Walrus Co.</h1>
+            <p class="subtitle lead">US Stock market analysis and short-term profit prediction.</p>
+                      </div>
+  </div>
     
   
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Christian Cardin </p>
+               <p>Elva Granados Escartin </p>
+               <p>Julia Pukarinen </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 30, 2023</p>
+      </div>
+    </div>
     
+      
+    </div>
+    
+  <div>
+    <div class="abstract">
+      <div class="abstract-title">Abstract</div>
+      <p>Will Machine Learning make you a billionaire with the stock market? An analysis of the most important US market sectors and a practical evaluation of three machine learning models.</p>
+    </div>
   </div>
   
+  </header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 
-</header>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
-<section id="predicting-stock-market-moves" class="level1">
-<h1>Predicting Stock Market Moves</h1>
-<section id="machine-learning" class="level2">
-<h2 class="anchored" data-anchor-id="machine-learning">Machine Learning</h2>
-<p>The goal was to see if we can predict moves in the stock market using an assortment of macroeconomic data: gross domestic product, unemployment rate, industrial production, yield spreads: 10-year treasury constant maturity minus 2-year treasury constant maturity, 10-year treasury constant maturity minus 3-month treasury constant maturity, ICE BofA US High Yield Index Option-Adjusted Spread, bond yields: 2-Year Treasury Constant Maturity Rate, Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis, 30-Year Treasury Constant Maturity Rate, total non-farm employees, initial jobless claims, consumer sentiment, manufacturers’ new orders, Federal Funds interes rates, the CBOE volatility index, West Texas Intermediate crude oil prices, producer price index for all commodities, average weekly hours of production and nonsupervisory employees and all employees in truck transportation.</p>
-<p>The concrete goal was to predict whether a move in the near future will be up or down. Resulting therefore in a binary prediction problem: output 1 if the ticker of interest after X periods, will be greater than today’s price value, otherwise give 0.</p>
-<p>Both ticker and number of periods are variables that can be changed at will.</p>
-<p>We focused mainly on the S&amp;P 500 index, and tried a multitude of periods, ranging from 1 day to 2 months.</p>
-<p>We implemented three algorithms:</p>
-<ul>
-<li><strong>XGBoost</strong> using the dedicated Python library<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</li>
-<li><strong>Multilayer Perceptron</strong> from Sci-Kit package<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</li>
-<li><strong>LSTM</strong> (Long-Short Term Memory), from Keras<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</li>
-</ul>
-</section>
-</section>
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/walrus.png" class="img-fluid figure-img" style="width:50.0%"></p>
+</figure>
+</div>
 <section id="economic-analysis" class="level1">
 <h1>Economic Analysis</h1>
 <section id="business-cycles" class="level2">
@@ -180,16 +198,105 @@ ul.task-list li input[type="checkbox"] {
 </iframe>
 </section>
 </section>
-
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p><a href="https://github.com/dmlc/xgboost">XGBoost</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p><a href="https://scikit-learn.org/stable/index.html">Sci-Kit Learn</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p><a href="https://keras.io/">Keras</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<section id="predicting-stock-market-moves" class="level1">
+<h1>Predicting Stock Market Moves</h1>
+<p>The aspiration of using machine learning to predict the stock market’s profitability may sound like the quest for a financial Holy Grail. However, it’s a question that has intrigued investors and data scientists alike: “Can you become a billionaire with ML?” The goal here is to harness the power of machine learning to predict whether the stock market will be profitable in a certain number of future periods, and the “certain number” is something we can tune according to our preferences. This is achieved through a binary classification approach, where for each trading day, the model attempts to predict whether the price at a specified future time will be higher than the current price (1) or not (0). For our analysis we focused mostly on the prediction of the <strong>S&amp;P 500</strong> (ticker: SPY), the index that comprises the major US stocks weighted by capitalization.</p>
+<section id="data-augmentation" class="level2">
+<h2 class="anchored" data-anchor-id="data-augmentation">Data Augmentation</h2>
+<p>The success of a machine learning model depends on the quality and quantity of data. We make use of a dataset that encompasses 9 out of the 11 major market sector indices, along with other key US macroeconomic data. To enhance the dataset’s information content and provide our algorithms with a richer context, we employ data augmentation. Beforetraining our algorithms, we apply several transformations to the dataset. One of these enhancements involves calculating the relative strength between different market indices. This provides a deeper understanding of the interplay between various sectors within the stock market. We also compute various Simple Moving Averages (SMA) at different timeframes, including 20, 50, and 200 periods. These SMA values offer insights into the trend and momentum of stock prices, which are crucial factors in stock market predictions.</p>
+<p>Furthermore, we incorporate calculations of relative returns, which give us an idea of how individual assets or sectors are performing concerning broader market movements. All these augmented features aim to better capture the underlying patterns and relationships within the stock market.</p>
+<p>Finally, the dataset is split in two sets: one for training, that goes from the beginning of out collected historical data (from 1998) until the end of 2021; and another for testing, which cover the recent history from 2022 until today.</p>
+</section>
+<section id="metrics" class="level2">
+<h2 class="anchored" data-anchor-id="metrics">Metrics</h2>
+<p>To test our models and compare them together, we calculate the following metrics for predictions computed on both the train and test set</p>
+<ol type="1">
+<li><p><strong>Accuracy</strong>: Accuracy is a widely-used metric that measures the overall correctness of a model’s predictions. It is calculated as the ratio of all correct predictions (true positives and true negatives) to the total number of predictions. The formula for accuracy is:</p>
+<p><span class="math display">\[\text{Accuracy} = \frac{\text{True Positives} + \text{True Negative}}{\text{Total Predictions}}\]</span></p>
+<p>Accuracy provides a general sense of how well the model performs across all classes. In stock market prediction, a high accuracy indicates that the model is making correct predictions for both positive and negative returns, but it may not reveal how well it’s doing with respect to profitable trades specifically.</p></li>
+<li><p><strong>Precision</strong>: Precision measures the accuracy of the positive predictions made by a model. It is calculated as the ratio of true positive predictions (correctly predicted positive cases) to the total number of positive predictions (true positives plus false positives). The formula for precision is:</p>
+<p><span class="math display">\[\text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}\]</span></p>
+<p>A high precision indicates that when the model predicts a positive outcome, it is more likely to be correct. In the context of stock market prediction, high precision means that when the model suggests a profitable trade, it is likely to be accurate, reducing the risk of making erroneous investment decisions.</p></li>
+<li><p><strong>Recall</strong>: It answers the question: “Out of all the actual positive instances, how many did the model correctly identify?” and is calculated as:</p>
+<p><span class="math display">\[\text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}\]</span></p>
+<p>A higher recall value indicates that the model is better at capturing positive instances, for example, in the context of stock market prediction, a high recall means that the model is effectively identifying days when the market will yield a profit, reducing the likelihood of missed opportunities for profitable trading.</p></li>
+<li><p><strong>F1 Score</strong>: The F1 score is a balance between precision and recall and is particularly useful when the dataset is imbalanced. It is calculated as the harmonic mean of precision and recall and provides a single metric that considers both false positives and false negatives. The formula for the F1 score is:</p>
+<p><span class="math display">\[\text{F1 Score} = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}\]</span></p>
+<p>A high F1 score indicates that the model achieves both high precision and high recall, striking a balance between avoiding false positives and correctly identifying positive cases. In stock market prediction, a high F1 score suggests that the model is effective at making accurate predictions of profitable trades while minimizing false positives and false negatives.</p></li>
 </ol>
-</section></div></main>
+</section>
+<section id="model-performance" class="level2">
+<h2 class="anchored" data-anchor-id="model-performance">Model Performance</h2>
+<section id="xgboost" class="level3">
+<h3 class="anchored" data-anchor-id="xgboost">XGBoost</h3>
+<p>XGBoost, which stands for eXtreme Gradient Boosting, is a powerful machine learning algorithm that builds an ensemble of decision trees to make predictions. It operates by building an ensemble of decision trees, where each tree corrects the errors of the previous one. It starts with a simple initial model and iteratively improves its predictions by adding new trees. During training, XGBoost uses a combination of regularization techniques to prevent overfitting and to ensure that the model generalizes well to unseen data.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/xgb_cv_history.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>Convergence plots show that as the model iteratively learns from the data, the errors decrease, and the AUC (Area under the curve) increases, indicating the model’s improving performance over time.</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="img/xgb_confusion_train.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="img/xgb_confusion_test.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>On the training set, the confusion matrix indicates a slight bias towards false negatives. This means that the model might be missing some profitable opportunities, but it maintains a high level of accuracy. With an accuracy of approximately 82%, the model outperforms a simple dummy model, achieving an F1 score of around 0.86. The recall, measuring the model’s ability to identify positive returns, is approximately 0.90, while precision, gauging its accuracy in predicting positive returns, stands at around 0.83.</p>
+<p>On the test set, a similar trend is observed, with a slight bias towards false negatives. The accuracy on the test set is around 46%, which is disappointingly comparable with the dummy model. This suggests that the model is failing to generalize, and any prediction is not better than a random guess.</p>
+</section>
+<section id="mlp" class="level3">
+<h3 class="anchored" data-anchor-id="mlp">MLP</h3>
+<p>The Multilayer Perceptron (MLP) is a type of artificial neural network designed to mimic the functioning of the human brain. It consists of multiple layers of interconnected nodes, each of which performs specific calculations. In the context of stock market prediction, an MLP receives historical data as input, like stock prices and market indicators. These data points are passed through the input layer and then into hidden layers, which transform and process the information. The crucial feature of MLP is its ability to learn intricate, non-linear patterns within the data. This is achieved through a process known as backpropagation, where the model adjusts its internal parameters (weights and biases) during training to minimize prediction errors. The network’s final layer produces an output, such as a binary classification of whether the market will yield a profit or not.</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="img/mlp_confusion_train.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="img/mlp_confusion_test.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>On the training set, the confusion matrix shows a balanced distribution of false positives and false negatives. This suggests that the model is achieving a compromise between correctly identifying positive and negative returns. The accuracy on the training set is approximately 73%, which is better than a simple dummy model. The F1 score is about 0.80, indicating a balance between precision and recall. The recall, measuring the model’s ability to identify positive returns, is approximately 0.86, while precision, measuring the accuracy of positive predictions, stands at around 0.74.</p>
+<p>Unfortunately, the result on the test set is similar to the one produced by XGBoost. No better than a random guess.</p>
+</section>
+<section id="lstmgru" class="level3">
+<h3 class="anchored" data-anchor-id="lstmgru">LSTM/GRU:</h3>
+<p>Long Short-Term Memory (LSTM) and Gated Recurrent Unit (GRU) are specialized variants of recurrent neural networks (RNNs) designed to handle sequential data, making them particularly effective for tasks like stock market prediction. These models address one of the main challenges in traditional RNNs, which is the vanishing gradient problem that limits their ability to capture long-range dependencies in sequential data. LSTMs and GRUs overcome this limitation through the use of gating mechanisms, which allow them to selectively retain and update information over time. LSTMs employ a more complex structure with three gates: input, forget, and output gates, and a cell state that enables the model to remember or forget information at various time steps. On the other hand, GRUs are computationally more efficient, utilizing just two gates: reset and update gates.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/gru_history.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>The history shows how the loss decreases with the number of epochs, and other metrics like accuracy increase. slightly with each itetration. This is a signal that the model converges, even though at slow pace.</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="img/gru_confusion_train.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="img/gru_confusion_test.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>On the training set, the confusion matrix indicates a heavy bias towards false negatives. This means that the model is more prone to missing profitable opportunities, resulting in a higher recall at the expense of precision. The binary accuracy on the training set is approximately 65%, indicating that the model outperforms a simple dummy model, even if slightly. The F1 score is about 0.73.</p>
+<p>Again, the binary accuracy on the test set is approximately 47%, which is not significantly better than random guessing.</p>
+</section>
+</section>
+<section id="overall-results" class="level2">
+<h2 class="anchored" data-anchor-id="overall-results">Overall results</h2>
+<p>Across all three machine learning algorithms we applied, we observed a consistent trend.</p>
+<p>The accuracy on the test set was generally quite high, indicating that our models were proficient at making predictions based on the training data. However, there was a catch – a rather significant one. All the algorithms displayed a tendency to overfit the data. In practical terms, this means that when we applied these models to predict on the test dataset, their accuracy wasn’t substantially better than what we could achieve with a simple, naive model that doesn’t consider the complexities of the stock market (basically, no better than a random guess).</p>
+<p>This overfitting issue raises concerns about the robustness and real-world applicability of our models. While they seem to master the training data, they struggle to generalize their predictions beyond that, which is a common pitfall in machine learning. It emphasizes the importance of being cautious when interpreting the accuracy metrics alone. Successful application in the financial world necessitates not just high accuracy during training but the ability to adapt to unforeseen market dynamics and make profitable decisions. It’s a reminder that stock market prediction, even with the aid of ML, remains a complex and challenging endeavor. So, for now, we discourage the ML poractitioner to take that multimillion loan for purchasing a Lamborghini.</p>
+</section>
+</section>
+
+</main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

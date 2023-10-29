@@ -1,0 +1,79 @@
+PREDICTIONG THE STOCK MARKET WITH MACHINE LEARNING
+
+Prediction Goals:
+The aspiration of using machine learning to predict the stock market's profitability may sound like the quest for a financial Holy Grail. However, it's a question that has intrigued investors and data scientists alike: "Can you become a billionaire with ML?" The goal here is to harness the power of machine learning to predict whether the stock market will be profitable in a certain number of future periods, and the "certain number" is something we can tune according to our preferences. This is achieved through a binary classification approach, where for each trading day, the model attempts to predict whether the price at a specified future time will be higher than the current price (1) or not (0).
+
+
+Data Augmentation:
+The success of a machine learning model depends on the quality and quantity of data. We make use of a dataset that encompasses 9 out of the 11 major market sector indices, along with other key US macroeconomic data. To enhance the dataset's information content and provide our algorithms with a richer context, we employ data augmentation.
+Beforetraining our algorithms, we apply several transformations to the dataset. One of these enhancements involves calculating the relative strength between different market indices. This provides a deeper understanding of the interplay between various sectors within the stock market.
+We also compute various Simple Moving Averages (SMA) at different timeframes, including 20, 50, and 200 periods. These SMA values offer insights into the trend and momentum of stock prices, which are crucial factors in stock market predictions.
+Furthermore, we incorporate calculations of relative returns, which give us an idea of how individual assets or sectors are performing concerning broader market movements. All these augmented features aim to better capture the underlying patterns and relationships within the stock market.
+
+
+Metrics:
+
+1. **Precision**:
+   Precision measures the accuracy of the positive predictions made by a model. It is calculated as the ratio of true positive predictions (correctly predicted positive cases) to the total number of positive predictions (true positives plus false positives). The formula for precision is:
+   
+   \[Precision = \frac{True Positives}{True Positives + False Positives}\]
+
+   A high precision indicates that when the model predicts a positive outcome, it is more likely to be correct. In the context of stock market prediction, high precision means that when the model suggests a profitable trade, it is likely to be accurate, reducing the risk of making erroneous investment decisions.
+
+2. **Accuracy**:
+   Accuracy is a widely-used metric that measures the overall correctness of a model's predictions. It is calculated as the ratio of all correct predictions (true positives and true negatives) to the total number of predictions. The formula for accuracy is:
+
+   \[Accuracy = \frac{True Positives + True Negatives}{Total Predictions}\]
+
+   Accuracy provides a general sense of how well the model performs across all classes. In stock market prediction, a high accuracy indicates that the model is making correct predictions for both positive and negative returns, but it may not reveal how well it's doing with respect to profitable trades specifically.
+
+3. **F1 Score**:
+   The F1 score is a balance between precision and recall and is particularly useful when the dataset is imbalanced. It is calculated as the harmonic mean of precision and recall and provides a single metric that considers both false positives and false negatives. The formula for the F1 score is:
+
+   \[F1 Score = \frac{2 \cdot (Precision \cdot Recall)}{Precision + Recall}\]
+
+   A high F1 score indicates that the model achieves both high precision and high recall, striking a balance between avoiding false positives and correctly identifying positive cases. In stock market prediction, a high F1 score suggests that the model is effective at making accurate predictions of profitable trades while minimizing false positives and false negatives.
+
+ALGORITHMS:
+
+XGBoost:
+	XGBoost, which stands for eXtreme Gradient Boosting, is a powerful machine learning algorithm that builds an ensemble of decision trees to make predictions. It operates by building an ensemble of decision trees, where each tree corrects the errors of the previous one. It starts with a simple initial model and iteratively improves its predictions by adding new trees. During training, XGBoost uses a combination of regularization techniques to prevent overfitting and to ensure that the model generalizes well to unseen data.
+
+	In our specific implementation, we set several hyperparameters for XGBoost to optimize its performance. We use "binary:logistic" as the prediction objective, which means the model will output the probability of a positive return, ranging from 0 to 1. To evaluate the quality of predictions, we employ metrics such as "error" for binary classification error, "auc" for the Area under the curve, and "logloss" for the negative log likelihood.
+
+	For training and model evaluation, we use a 5-fold cross-validation approach. The trees in XGBoost use the "hist" algorithm, which is a faster histogram-optimized approximate greedy algorithm, with specific settings such as "max_depth=3" and "min_child_weight=4." Early stopping is also implemented if there are no improvements in 20 rounds.
+
+	Convergence plots show that as the model iteratively learns from the data, the errors decrease, and the AUC (Area under the curve) increases, indicating the model's improving performance over time.
+
+	On the training set, the confusion matrix indicates a slight bias towards false negatives. This means that the model might be missing some profitable opportunities, but it maintains a high level of accuracy. With an accuracy of approximately 82%, the model outperforms a simple dummy model, achieving an F1 score of around 0.86. The recall, measuring the model's ability to identify positive returns, is approximately 0.90, while precision, gauging its accuracy in predicting positive returns, stands at around 0.83.
+
+	On the test set, a similar trend is observed, with a slight bias towards false negatives. The accuracy on the test set is around 46%, which is disappointingly comparable with the dummy model. This suggests that the model is failing to generalize, and any prediction is not better than a random guess.
+
+MLP:
+	The Multilayer Perceptron (MLP) is a type of artificial neural network designed to mimic the functioning of the human brain. It consists of multiple layers of interconnected nodes, each of which performs specific calculations. In the context of stock market prediction, an MLP receives historical data as input, like stock prices and market indicators. These data points are passed through the input layer and then into hidden layers, which transform and process the information. The crucial feature of MLP is its ability to learn intricate, non-linear patterns within the data. This is achieved through a process known as backpropagation, where the model adjusts its internal parameters (weights and biases) during training to minimize prediction errors. The network's final layer produces an output, such as a binary classification of whether the market will yield a profit or not.
+
+	In our MLP configuration, we employ a neural network architecture with 100 hidden layers. This deep architecture allows the model to learn intricate and hierarchical patterns from the data. The optimizer used is Stochastic Gradient Descent (SGD) with a constant learning rate. The batch size for training is set to 64, which determines how many data points are used in each iteration to update the model. Early stopping is a mechanism implemented to prevent overfitting and save computational resources. If there are no improvements in the model's performance for 20 consecutive iterations, the training process is terminated.
+
+	On the training set, the confusion matrix shows a balanced distribution of false positives and false negatives. This suggests that the model is achieving a compromise between correctly identifying positive and negative returns. The accuracy on the training set is approximately 73%, which is better than a simple dummy model. The F1 score is about 0.80, indicating a balance between precision and recall. The recall, measuring the model's ability to identify positive returns, is approximately 0.86, while precision, measuring the accuracy of positive predictions, stands at around 0.74.
+
+	Unfortunately, the result on the test set is similar to the one produced by XGBoost. No better than a random guess.
+
+
+LSTM/GRU:
+	Long Short-Term Memory (LSTM) and Gated Recurrent Unit (GRU) are specialized variants of recurrent neural networks (RNNs) designed to handle sequential data, making them particularly effective for tasks like stock market prediction. These models address one of the main challenges in traditional RNNs, which is the vanishing gradient problem that limits their ability to capture long-range dependencies in sequential data. LSTMs and GRUs overcome this limitation through the use of gating mechanisms, which allow them to selectively retain and update information over time. LSTMs employ a more complex structure with three gates: input, forget, and output gates, and a cell state that enables the model to remember or forget information at various time steps. On the other hand, GRUs are computationally more efficient, utilizing just two gates: reset and update gates.
+
+	In our experimentation, we explored various model architectures based on both LSTM and GRU networks. These models consisted of 50 layers with a hyperbolic tangent (tanh) activation function. The tanh activation function introduces non-linearity into the network, allowing it to capture complex patterns. The models included a unit normalization layer, which can enhance the training stability and convergence of the network. Each architecture culminated with a 3-layer dense classifier, providing the final prediction output.
+
+	The optimizer utilized in this setup is Stochastic Gradient Descent (SGD) with a learning rate of 0.01. For loss computation, Binary Cross-Entropy is chosen as the loss function. This is a common choice for binary classification tasks, where the model evaluates how well its predictions match the actual outcomes. Binary Accuracy is used as the evaluation metric, assessing the model's ability to predict binary classifications accurately.
+
+	On the training set, the confusion matrix indicates a heavy bias towards false negatives. This means that the model is more prone to missing profitable opportunities, resulting in a higher recall at the expense of precision. The binary accuracy on the training set is approximately 65%, indicating that the model outperforms a simple dummy model, even if slightly. The F1 score is about 0.73.
+
+	Again, the binary accuracy on the test set is approximately 47%, which is not significantly better than random guessing.
+
+
+Results:
+Across all three machine learning algorithms we applied, we observed a consistent trend.
+
+The accuracy on the test set was generally quite high, indicating that our models were proficient at making predictions based on the training data. However, there was a catch – a rather significant one. All the algorithms displayed a tendency to overfit the data. In practical terms, this means that when we applied these models to predict on the test dataset, their accuracy wasn't substantially better than what we could achieve with a simple, naive model that doesn't consider the complexities of the stock market (basically, no better than a random guess).
+
+This overfitting issue raises concerns about the robustness and real-world applicability of our models. While they seem to master the training data, they struggle to generalize their predictions beyond that, which is a common pitfall in machine learning. It emphasizes the importance of being cautious when interpreting the accuracy metrics alone. Successful application in the financial world necessitates not just high accuracy during training but the ability to adapt to unforeseen market dynamics and make profitable decisions. It's a reminder that stock market prediction, even with the aid of ML, remains a complex and challenging endeavor. So, for now, we discourage the ML poractitioner to take that multimillion loan for purchasing a Lamborghini.
