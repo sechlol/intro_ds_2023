@@ -12,14 +12,16 @@ _INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"
 
 
 def do_something(dataset: pd.DataFrame) -> pd.DataFrame:
+    predict_feature = "XLP"
     predict_ahead = 10
-    data_enriched = _preprocess_data(dataset, predict_ahead, scale=True)
-    y_target = _make_target(data_enriched, feature="SPY", periods_difference=predict_ahead)
+    data_enriched = _preprocess_data(dataset, predict_feature, predict_ahead, scale=True)
+    y_target = _make_target(data_enriched, predict_feature, periods_difference=predict_ahead)
 
+    _do_xgb(data_enriched, y_target)
+    print()
+    _do_mlp(data_enriched, y_target)
+    print()
     _do_lstm(data_enriched, y_target)
-    # _do_mlp(data_enriched, y_target)
-    # print()
-    # _do_xgb(data_enriched, y_target)
 
     # Return empty result for now.
     return pd.DataFrame()
@@ -63,6 +65,7 @@ def _do_xgb(data_enriched, y_target):
 
 def _preprocess_data(
         dataset: pd.DataFrame,
+        feature: str,
         predict_ahead: int,
         resample_freq: Optional[str] = None,
         scale: bool = False) -> pd.DataFrame:
@@ -82,11 +85,11 @@ def _preprocess_data(
     rel_strengths = dw.compute_relative_strength(dataset, _INDICES)
     rel_returns = dw.compute_returns(dataset, _INDICES, period_differences=[predict_ahead, 20, 50, 200])
 
-    # Keep only SPY from the original prices. Discard all the others
+    # Keep only one feature from the original prices. Discard all the others
     combined = (pd
                 .concat([dataset, smas, rel_returns, rel_strengths], axis=1)
                 .dropna()
-                .drop(columns=_INDICES[1:]))
+                .drop(columns=[i for i in _INDICES if i is not feature]))
 
     if resample_freq:
         combined = combined.resample(resample_freq).last()

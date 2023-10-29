@@ -128,6 +128,7 @@ def save_result(result: LstmResultData, history: History, split: Tuple):
         json.dump(acc_json, f, indent=3)
 
     # Plot history
+    fig, axes = plt.subplots()
     for metric, values in history.history.items():
         plt.plot(history.epoch, values, label=metric)
 
