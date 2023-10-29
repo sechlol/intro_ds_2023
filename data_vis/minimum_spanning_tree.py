@@ -33,7 +33,7 @@ def calculate_stats(returns):
     """
 
     # log returns are additive, 252 trading days
-    annualized_returns = list(np.mean(returns) * 252 * 100)
+    annualized_returns = list(np.mean(returns, axis=0) * 252 * 100)
 
     annualized_volatility = [
         np.std(returns[col] * 100) * (252 ** 0.5) for col in list(returns.columns)
