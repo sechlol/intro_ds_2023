@@ -75,32 +75,6 @@ def RS_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end
 
 
 
-def test_plot_s(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end_date: datetime, save_as_html: bool = False):
-    """
-    General plotting
-    """
-    directory = r"C:\Users\elvad\Documents\Intro_to_DS"
-    file_name = f'plot_{"_".join(indices)}.html'
-    file_path = os.path.join(directory, file_name)
-    #directory_repo = r"data_vis"
-    #file_path_repo = os.path.join(directory_repo, file_name)
-    data = dataset.loc[start_date:end_date, indices]
-    fig = go.Figure()
-    for index in indices:
-            fig.add_trace(go.Scatter(x=data.index, y=data[index], mode='lines', name=index))
-
-    fig.update_layout(
-        title=f'Time Series of The CBOE VIX',#{", ".join(indices)}',
-        xaxis_title='Date',
-        yaxis_title='Returns',
-    )
-
-    if save_as_html:
-        #fig.write_html(file_path)
-        fig.write_html(file_name)
-    fig.show()
-
-
 def test_plot(dataset: pd.DataFrame, indices: List[str], start_date: datetime, end_date: datetime, save_as_html: bool = False):
     """
     General plotting
