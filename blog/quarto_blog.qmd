@@ -5,6 +5,44 @@ format:
     code-fold: true
 jupyter: python3
 ---
+# Predicting Stock Market Moves
+
+## Machine Learning
+
+The goal was to see if we can predict moves in the stock market using an assortment of macroeconomic data:
+gross domestic product, unemployment rate, industrial production,
+yield spreads: 10-year treasury constant maturity minus 2-year treasury constant maturity,
+10-year treasury constant maturity minus 3-month treasury constant maturity,
+ICE BofA US High Yield Index Option-Adjusted Spread,
+bond yields: 2-Year Treasury Constant Maturity Rate,
+Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis,
+30-Year Treasury Constant Maturity Rate,
+total non-farm employees,
+initial jobless claims, consumer sentiment, manufacturers' new orders, Federal Funds interes rates,
+the CBOE volatility index, West Texas Intermediate crude oil prices, producer price index for all commodities,
+average weekly hours of production and nonsupervisory employees and all employees in truck transportation.
+
+The concrete goal was to predict whether a move in the near future will be up or down.
+Resulting therefore in a binary prediction problem: output 1 if the ticker of interest after X periods,
+will be greater than today's price value, otherwise give 0.
+
+Both ticker and number of periods are variables that can be changed at will.
+
+We focused mainly on the S&P 500 index, and tried a multitude of periods, ranging from 1 day to 2 months.
+
+We implemented three algorithms:
+
+- **XGBoost** using the dedicated Python library[^1].
+- **Multilayer Perceptron** from Sci-Kit package[^2].
+- **LSTM** (Long-Short Term Memory), from Keras[^3].
+
+[^1]: [XGBoost](https://github.com/dmlc/xgboost)
+[^2]: [Sci-Kit Learn](https://scikit-learn.org/stable/index.html)
+[^3]: [Keras](https://keras.io/)
+
+
+# Economic Analysis
+
 ## Business cycles
 
 The economy is usually expanding, although sometimes recessions come. These are short lasted, but it may take some time for the economy to return to its previous level of activity.
