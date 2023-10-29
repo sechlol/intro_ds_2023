@@ -37,6 +37,12 @@ ul.task-list li input[type="checkbox"] {
 <script src="quarto_blog_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="quarto_blog_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="quarto_blog_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: black;
+      }
+</style>
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -292,7 +298,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="overall-results">Overall results</h2>
 <p>Across all three machine learning algorithms we applied, we observed a consistent trend.</p>
 <p>The accuracy on the test set was generally quite high, indicating that our models were proficient at making predictions based on the training data. However, there was a catch – a rather significant one. All the algorithms displayed a tendency to overfit the data. In practical terms, this means that when we applied these models to predict on the test dataset, their accuracy wasn’t substantially better than what we could achieve with a simple, naive model that doesn’t consider the complexities of the stock market (basically, no better than a random guess).</p>
-<p>This overfitting issue raises concerns about the robustness and real-world applicability of our models. While they seem to master the training data, they struggle to generalize their predictions beyond that, which is a common pitfall in machine learning. It emphasizes the importance of being cautious when interpreting the accuracy metrics alone. Successful application in the financial world necessitates not just high accuracy during training but the ability to adapt to unforeseen market dynamics and make profitable decisions. It’s a reminder that stock market prediction, even with the aid of ML, remains a complex and challenging endeavor. So, for now, we discourage the ML poractitioner to take that multimillion loan for purchasing a Lamborghini.</p>
+<p>This overfitting issue raises concerns about the robustness and real-world applicability of our models. While they seem to master the training data, they struggle to generalize their predictions beyond that, which is a common pitfall in machine learning. It emphasizes the importance of being cautious when interpreting the accuracy metrics alone. Successful application in the financial world necessitates not just high accuracy during training but the ability to adapt to unforeseen market dynamics and make profitable decisions. It’s a reminder that stock market prediction, even with the aid of ML, remains a complex and challenging endeavor. So, for now, we discourage the ML practitioners to take that multimillion loan for purchasing a Lamborghini.</p>
 </section>
 </section>
 

@@ -10,7 +10,7 @@ author:
 abstract: > 
   Will Machine Learning make you a billionaire with the stock market? An analysis of the most important US market sectors and a practical evaluation of three machine learning models.
 
-title-block-banner: true
+title-block-banner: black
 format:
   html:
     code-fold: true
