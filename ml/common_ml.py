@@ -1,6 +1,7 @@
 from typing import Dict, Any
 
 import numpy as np
+from sklearn import metrics
 
 
 def calculate_accuracy(predictions_proba: np.ndarray, y_true: np.ndarray) -> Dict[str, Any]:
@@ -18,17 +19,14 @@ def calculate_accuracy(predictions_proba: np.ndarray, y_true: np.ndarray) -> Dic
     maximizes accuracy on the provided predictions and true labels.
     """
     y_true = y_true.flatten()
-    correct_count = np.array([
-        [t, np.sum((predictions_proba > t) == y_true)]
-        for t in np.linspace(0.1, 1, 20)])
-    best_i = correct_count[:, 1].argmax()
-    best_accuracy = correct_count[best_i, 1] / len(predictions_proba)
-    best_threshold = correct_count[best_i, 0]
     accuracy_50 = np.sum((predictions_proba > 0.5) == y_true) / len(predictions_proba)
     accuracy_dummy = np.sum(y_true == True) / len(predictions_proba)
+    y_pred_best = (predictions_proba > 0.5).astype(float)
     return {
-        "best_decision_threshold": best_threshold,
-        "accuracy": best_accuracy,
-        "accuracy_50": accuracy_50,
+        "accuracy": accuracy_50,
         "accuracy_dummy": accuracy_dummy,
+        "f1_score": metrics.f1_score(y_true, y_pred_best),
+        "recall": metrics.recall_score(y_true.astype(int), y_pred_best.astype(int)),
+        "precision": metrics.precision_score(y_true, y_pred_best, zero_division=0),
+        "r2_score": metrics.r2_score(y_true, y_pred_best),
     }

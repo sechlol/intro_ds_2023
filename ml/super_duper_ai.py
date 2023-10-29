@@ -17,10 +17,10 @@ def do_something(dataset: pd.DataFrame) -> pd.DataFrame:
     data_enriched = _preprocess_data(dataset, predict_feature, predict_ahead, scale=True)
     y_target = _make_target(data_enriched, predict_feature, periods_difference=predict_ahead)
 
-    _do_xgb(data_enriched, y_target)
-    print()
-    _do_mlp(data_enriched, y_target)
-    print()
+    # _do_xgb(data_enriched, y_target)
+    # print()
+    # _do_mlp(data_enriched, y_target)
+    # print()
     _do_lstm(data_enriched, y_target)
 
     # Return empty result for now.
@@ -35,8 +35,9 @@ def _do_lstm(data_enriched, y_target):
     y_post_2022 = y_target["2022":].to_numpy()
 
     model, history = lstm.run_pipeline(x_pre_2022, y_pre_2022)
-    result = lstm.make_predictions(x_post_2022, y_post_2022, model)
-    lstm.save_result(result, history, split=(x_pre_2022, x_post_2022, y_pre_2022, y_post_2022))
+    train_data = lstm.make_predictions(x_pre_2022.to_numpy(), y_pre_2022, model)
+    test_data = lstm.make_predictions(x_post_2022, y_post_2022, model)
+    lstm.save_result(train_data, test_data, history, split=(x_pre_2022, x_post_2022, y_pre_2022, y_post_2022))
 
 
 def _do_mlp(data_enriched, y_target):
@@ -47,8 +48,7 @@ def _do_mlp(data_enriched, y_target):
     y_post_2022 = y_target["2022":].to_numpy()
 
     train_result = mlp.run_pipeline(x_pre_2022, y_pre_2022, cross_validate=False)
-    prediction = mlp.make_predictions(x_post_2022, y_post_2022, train_result.model)
-    print(prediction)
+    mlp.make_predictions(x_post_2022, y_post_2022, train_result.model)
 
 
 def _do_xgb(data_enriched, y_target):
@@ -59,8 +59,7 @@ def _do_xgb(data_enriched, y_target):
     y_post_2022 = y_target["2022":].to_numpy()
 
     train_result = xgb.run_pipeline(x_pre_2022, y_pre_2022, cross_validate=False)
-    prediction = xgb.make_predictions(x_post_2022, y_post_2022, train_result.booster)
-    print(prediction)
+    xgb.make_predictions(x_post_2022, y_post_2022, train_result.booster)
 
 
 def _preprocess_data(

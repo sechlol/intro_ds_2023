@@ -32,7 +32,7 @@ class XGBResultData:
     booster: xgb.Booster
     history: pd.DataFrame
     contributions: pd.DataFrame
-    extras: Dict
+    train_scores: Dict
     cv_history: Optional[pd.DataFrame] = None
 
 
@@ -76,7 +76,7 @@ def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool)
         booster=booster,
         history=history,
         contributions=contributions_df,
-        extras=accuracy_data,
+        train_scores=accuracy_data,
         cv_history=cv_result)
 
     _save_result(result_data, split)
@@ -86,7 +86,13 @@ def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool)
 def make_predictions(x_data: np.ndarray, y_true: np.ndarray, model: xgb.Booster):
     x_matrix = xgb.DMatrix(x_data)
     predictions = model.predict(x_matrix)
-    return calculate_accuracy(predictions, y_true)
+    accuracy_score = calculate_accuracy(predictions, y_true)
+
+    print("Test Accuracy:\n", accuracy_score)
+    with open(_OUT_PATH / "accuracy_test.json", "w") as f:
+        json.dump(accuracy_score, f, indent=3)
+
+    return accuracy_score
 
 
 def _save_result(result: XGBResultData, split):
@@ -108,8 +114,8 @@ def _save_result(result: XGBResultData, split):
     result.history.to_csv(_OUT_PATH / "train_history.csv")
     result.booster.save_model(_OUT_PATH / "booster_model.json")
     result.contributions.to_csv(_OUT_PATH / "features_contribution.csv")
-    with open(_OUT_PATH / "extras.json", "w") as f:
-        json.dump(result.extras, f, indent=3)
+    with open(_OUT_PATH / "accuracy_train.json", "w") as f:
+        json.dump(result.train_scores, f, indent=3)
 
     # Plot train metrics
     result.history.plot()
@@ -129,8 +135,8 @@ def _save_result(result: XGBResultData, split):
         plt.savefig(_OUT_PATH / "cv_history.png")
 
     x_train, x_test, y_train, y_test = split
-    y_train_pred = result.booster.predict(xgb.DMatrix(x_train)) > result.extras["best_decision_threshold"]
-    y_test_pred = result.booster.predict(xgb.DMatrix(x_test)) > result.extras["best_decision_threshold"]
+    y_train_pred = result.booster.predict(xgb.DMatrix(x_train)) > 0.5
+    y_test_pred = result.booster.predict(xgb.DMatrix(x_test)) > 0.5
 
     # Plot confusion matrix of train data
     metrics.ConfusionMatrixDisplay.from_predictions(y_train_pred, y_train.flatten())
@@ -142,8 +148,7 @@ def _save_result(result: XGBResultData, split):
     plt.suptitle("Test set confusion matrix")
     plt.savefig(_OUT_PATH / "confusion_test.png")
 
-    print(result.extras)
-    print(f"Saved results to {_OUT_PATH}")
+    print("Train Accuracy:\n", result.train_scores)
 
 
 def _do_training(params: Params) -> Tuple[xgb.Booster, pd.DataFrame]:

@@ -18,7 +18,7 @@ _SEED = 666
 class MlpResultData:
     model: neural_network.MLPClassifier
     recall: float
-    accuracy: Dict
+    train_accuracy: Dict
     confusion_matrix: np.ndarray
     cv_scores: Optional[pd.DataFrame] = None
 
@@ -36,32 +36,37 @@ def run_pipeline(data: pd.DataFrame, y_target: np.ndarray, cross_validate: bool)
         validation_fraction=0.01,
         n_iter_no_change=20,
         shuffle=True,
-        learning_rate="constant",
+        # learning_rate="constant",
         solver="sgd",
-        batch_size=64,
+        batch_size=32,
         random_state=_SEED,
     ).fit(x_train, y_train)
 
     y_predict_proba = model.predict_proba(x_test)
     y_predict = y_predict_proba[:, 1] > 0.5
 
-    results = MlpResultData(
+    result = MlpResultData(
         model=model,
         recall=metrics.recall_score(y_test, y_predict),
         confusion_matrix=metrics.confusion_matrix(y_test, y_predict),
-        accuracy=calculate_accuracy(y_predict_proba[:, 1], y_test))
+        train_accuracy=calculate_accuracy(y_predict_proba[:, 1], y_test))
 
     if cross_validate:
         scores = ["accuracy", "average_precision", "f1", "roc_auc"]
-        results.cv_scores = model_selection.cross_validate(model, x_train, y_train, cv=5, scoring=scores)
+        result.cv_scores = model_selection.cross_validate(model, x_train, y_train, cv=5, scoring=scores)
 
-    _save_results(results, model, split)
-    return results
+    _save_results(result, model, split)
+    return result
 
 
 def make_predictions(x_data: np.ndarray, y_true: np.ndarray, model: neural_network.MLPClassifier) -> Dict[str, Any]:
     predictions = model.predict_proba(x_data)
-    return calculate_accuracy(predictions[:, 1], y_true)
+    accuracy_scores = calculate_accuracy(predictions[:, 1], y_true)
+
+    print("Test Accuracy:\n", accuracy_scores)
+    with open(_OUT_PATH / "accuracy_test.json", "w") as f:
+        json.dump(accuracy_scores, f, indent=3)
+    return accuracy_scores
 
 
 def _save_results(result: MlpResultData, model, split):
@@ -79,5 +84,7 @@ def _save_results(result: MlpResultData, model, split):
     plt.suptitle("Test set confusion matrix")
     plt.savefig(_OUT_PATH / "confusion_test.png")
 
-    with open(_OUT_PATH / "accuracy.json", "w") as f:
-        json.dump({**result.accuracy, "recall": result.recall}, f, indent=3)
+    with open(_OUT_PATH / "accuracy_train.json", "w") as f:
+        json.dump(result.train_accuracy, f, indent=3)
+
+    print("Train Accuracy:\n", result.train_accuracy)

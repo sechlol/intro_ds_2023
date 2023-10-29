@@ -55,7 +55,7 @@ def make_predictions(x_data: np.ndarray, y_true: np.ndarray, model: Sequential) 
     y_predict_proba = model.predict(x).flatten()
     y_predict = y_predict_proba > 0.5
 
-    result = LstmResultData(
+    return LstmResultData(
         model=model,
         recall=metrics.recall_score(y, y_predict),
         confusion_matrix=metrics.confusion_matrix(y, y_predict),
@@ -63,8 +63,6 @@ def make_predictions(x_data: np.ndarray, y_true: np.ndarray, model: Sequential) 
             "binary_accuracy": binary_accuracy,
             **calculate_accuracy(y_predict_proba, y)
         })
-
-    return result
 
 
 def _get_model_simple(input_shape: Tuple[int, int]) -> Sequential:
@@ -89,7 +87,9 @@ def _get_model_simple_gru(input_shape: Tuple[int, int]) -> Sequential:
     model = Sequential()
     model.add(layers.GRU(units=50, activation="tanh", input_shape=input_shape))
     model.add(layers.UnitNormalization())
-    model.add(layers.Dense(units=1, activation="sigmoid"))
+    model.add(layers.Dense(units=32))
+    model.add(layers.Dense(units=16))
+    model.add(layers.Dense(units=1))
 
     model.compile(
         loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
@@ -118,14 +118,16 @@ def _get_model_complex(input_shape: Tuple[int, int]) -> Sequential:
     return model
 
 
-def save_result(result: LstmResultData, history: History, split: Tuple):
+def save_result(train_data: LstmResultData, test_data: LstmResultData, history: History, split: Tuple):
     # Create the directory structure if it doesn't exist
     _OUT_PATH.mkdir(parents=True, exist_ok=True)
 
     # Save files
-    acc_json = {"recall": result.recall, **result.accuracy}
-    with open(_OUT_PATH / "accuracy.json", "w") as f:
-        json.dump(acc_json, f, indent=3)
+    with open(_OUT_PATH / "accuracy_train.json", "w") as f:
+        json.dump(train_data.accuracy, f, indent=3)
+
+    with open(_OUT_PATH / "accuracy_test.json", "w") as f:
+        json.dump(test_data.accuracy, f, indent=3)
 
     # Plot history
     fig, axes = plt.subplots()
@@ -140,8 +142,8 @@ def save_result(result: LstmResultData, history: History, split: Tuple):
     plt.savefig(_OUT_PATH / "history.png")
 
     x_train, x_test, y_train, y_test = _split_train_test(split)
-    y_train_pred = result.model.predict(x_train) > result.accuracy["best_decision_threshold"]
-    y_test_pred = result.model.predict(x_test) > result.accuracy["best_decision_threshold"]
+    y_train_pred = test_data.model.predict(x_train) > 0.5
+    y_test_pred = test_data.model.predict(x_test) > 0.5
 
     # Plot confusion matrix of train data
     metrics.ConfusionMatrixDisplay.from_predictions(y_train_pred, y_train.flatten())
@@ -153,8 +155,8 @@ def save_result(result: LstmResultData, history: History, split: Tuple):
     plt.suptitle("Test set confusion matrix")
     plt.savefig(_OUT_PATH / "confusion_test.png")
 
-    print(acc_json)
-    print(f"Saved results to {_OUT_PATH}")
+    print("Train Accuracy:\n", train_data.accuracy)
+    print("Test Accuracy:\n", test_data.accuracy)
 
 
 def _split_train_test(split: Tuple) -> Tuple:
