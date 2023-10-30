@@ -234,12 +234,14 @@ From them you can easily find out:
 # Predicting Stock Market Moves
 The aspiration of using machine learning to predict the stock market's profitability may sound like the quest for a financial Holy Grail. However, it's a question that has intrigued investors and data scientists alike: "Can you become a billionaire with ML?" The goal here is to harness the power of machine learning to predict whether the stock market will be profitable in a certain number of future periods, and the "certain number" is something we can tune according to our preferences. This is achieved through a binary classification approach, where for each trading day, the model attempts to predict whether the price at a specified future time will be higher than the current price (1) or not (0). For our analysis we focused mostly on the prediction of the **S&P 500** (ticker: SPY), the index that comprises the major US stocks weighted by capitalization.
 
-## Data Augmentation
+## Data Augmentation and preparation
 The success of a machine learning model depends on the quality and quantity of data. We make use of a dataset that encompasses 9 out of the 11 major market sector indices, along with other key US macroeconomic data. To enhance the dataset's information content and provide our algorithms with a richer context, we employ data augmentation.
 Beforetraining our algorithms, we apply several transformations to the dataset. One of these enhancements involves calculating the relative strength between different market indices. This provides a deeper understanding of the interplay between various sectors within the stock market.
 We also compute various Simple Moving Averages (SMA) at different timeframes, including 20, 50, and 200 periods. These SMA values offer insights into the trend and momentum of stock prices, which are crucial factors in stock market predictions.
 
 Furthermore, we incorporate calculations of relative returns, which give us an idea of how individual assets or sectors are performing concerning broader market movements. All these augmented features aim to better capture the underlying patterns and relationships within the stock market.
+
+Two additional steps can be performed on the enriched data, optionally: re-sampling to a different frequency (e.g. monthly or weekly periods), and standardization, in which the data is normalized to have 0 mean and unit variance, which should have a regularizing effect on training.
 
 Finally, the dataset is split in two sets: one for training, that goes from the beginning of out collected historical data (from 1998) until the end of 2021; and another for testing, which cover the recent history from 2022 until today.
 
@@ -290,6 +292,12 @@ Convergence plots show that as the model iteratively learns from the data, the e
 
 On the training set, the confusion matrix indicates a slight bias towards false negatives. This means that the model might be missing some profitable opportunities, but it maintains a high level of accuracy. With an accuracy of approximately 82%, the model outperforms a simple dummy model, achieving an F1 score of around 0.86. The recall, measuring the model's ability to identify positive returns, is approximately 0.90, while precision, gauging its accuracy in predicting positive returns, stands at around 0.83.
 
+Dataset | Dummy Accuracy | Accuracy | F1 Score | Recall | Precision |  
+--------|----------------|----------|----------|--------|-----------|  
+Train   |0.61            |0.82      |0.86      |0.89    |0.82       |  
+Test    |0.47            |0.46      |0.63      |0.97    |0.47       |  
+: XGBoost model evaluation results {.striped .hover}
+
 On the test set, a similar trend is observed, with a slight bias towards false negatives. The accuracy on the test set is around 46%, which is disappointingly comparable with the dummy model. This suggests that the model is failing to generalize, and any prediction is not better than a random guess.
 
 
@@ -303,6 +311,12 @@ The Multilayer Perceptron (MLP) is a type of artificial neural network designed 
 :::
 
 On the training set, the confusion matrix shows a balanced distribution of false positives and false negatives. This suggests that the model is achieving a compromise between correctly identifying positive and negative returns. The accuracy on the training set is approximately 73%, which is better than a simple dummy model. The F1 score is about 0.80, indicating a balance between precision and recall. The recall, measuring the model's ability to identify positive returns, is approximately 0.86, while precision, measuring the accuracy of positive predictions, stands at around 0.74.
+
+Dataset | Dummy Accuracy | Accuracy | F1 Score | Recall | Precision |  
+--------|----------------|----------|----------|--------|-----------|  
+Train   |0.61            |0.73      |0.79      |0.85    |0.74       |  
+Test    |0.47            |0.47      |0.41      |0.37    |0.46       |  
+: MLP model evaluation results {.striped .hover}
 
 Unfortunately, the result on the test set is similar to the one produced by XGBoost. No better than a random guess.
 
@@ -320,9 +334,15 @@ The history shows how the loss decreases with the number of epochs, and other me
 ![](img/gru_confusion_test.png)
 :::
 
-On the training set, the confusion matrix indicates a heavy bias towards false negatives. This means that the model is more prone to missing profitable opportunities, resulting in a higher recall at the expense of precision. The binary accuracy on the training set is approximately 65%, indicating that the model outperforms a simple dummy model, even if slightly. The F1 score is about 0.73.
+On the training set, the confusion matrix indicates a heavy bias towards false negatives. This means that the model is more prone to missing profitable opportunities, resulting in a higher recall at the expense of precision. The binary accuracy on the training set is approximately 64%, indicating that the model outperforms a simple dummy model, even if slightly. The F1 score is about 0.73.
 
-Again, the binary accuracy on the test set is approximately 47%, which is not significantly better than random guessing.
+Dataset | Dummy Accuracy | Accuracy | F1 Score | Recall | Precision |  
+--------|----------------|----------|----------|--------|-----------|  
+Train   |0.61            |0.64      |0.73      |0.82    |0.66       |  
+Test    |0.47            |0.44      |0.43      |0.43    |0.42       |  
+: LSTM model evaluation results {.striped .hover}
+
+Again, the binary accuracy on the test set is approximately 44%, which is not significantly better than random guessing.
 
 ## Overall results
 Across all three machine learning algorithms we applied, we observed a consistent trend.
@@ -332,6 +352,7 @@ The accuracy on the test set was generally quite high, indicating that our model
 This overfitting issue raises concerns about the robustness and real-world applicability of our models. While they seem to master the training data, they struggle to generalize their predictions beyond that, which is a common pitfall in machine learning. It emphasizes the importance of being cautious when interpreting the accuracy metrics alone. Successful application in the financial world necessitates not just high accuracy during training but the ability to adapt to unforeseen market dynamics and make profitable decisions. It's a reminder that stock market prediction, even with the aid of ML, remains a complex and challenging endeavor. So, for now, we discourage the ML practitioners to take that multimillion loan for purchasing a Lamborghini.
 
 
-
-
-
+## So... Is it over? 
+No! There are many things that can be done to improve the models. We believe that the features in our dataset confused the models, because they are heavily correlated. So the first thing to try would be to change the type of augmentation and features included in the training dataset. A good strategy would be to train several models with different sets of features, and then merge the features that yield to an improved accuracy. Another low-hanging possible improvement is increasing the number of epochs (for the deep learning models based on backpropagation), or number of iterations, plus doing more hyperparameter tuning.
+There is evidence in the literature^[Mahinda Mailagaha Kumbure, Christoph Lohrmann, Pasi Luukka, Jari Porras,
+Machine learning techniques and data for stock market forecasting: A literature review, [https://doi.org/10.1016/j.eswa.2022.116659](https://doi.org/10.1016/j.eswa.2022.116659)] that Deep Learning models can be used to get a small probabilistic advantage at predicting profit opportunitues, that are significantly better than random choice, even if the margin is just of a mere 54% accuracy on unseen data^[S. Kim, S. Ku, W. Chang and J. W. Song, "Predicting the Direction of US Stock Prices Using Effective Transfer Entropy and Machine Learning Techniques" [https://ieeexplore.ieee.org/document/9119388](https://ieeexplore.ieee.org/document/9119388)].

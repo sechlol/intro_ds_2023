@@ -21,7 +21,7 @@ from ml.common_ml import calculate_accuracy
 # https://stackoverflow.com/questions/69906416/forecast-future-values-with-lstm-in-python
 # https://charlieoneill.medium.com/predicting-the-price-of-bitcoin-with-multivariate-pytorch-lstms-695bc294130
 
-_OUT_PATH = Path("out/lstm")
+_OUT_PATH = Path("out/lstm2")
 _SEED = 666
 _N_STEPS = 20
 _BATCHES = 64
@@ -138,7 +138,7 @@ def save_result(train_data: LstmResultData, test_data: LstmResultData, history: 
     plt.xlabel("Epochs")
     plt.ylabel("Metrics")
     plt.xticks(history.epoch)
-    plt.suptitle("LSTM training history")
+    plt.suptitle("Training history")
     plt.savefig(_OUT_PATH / "gru_history.png")
 
     x_train, x_test, y_train, y_test = _split_train_test(split)

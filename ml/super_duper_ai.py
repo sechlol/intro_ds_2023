@@ -12,15 +12,15 @@ _INDICES = ["SPY", "XLE", "XLY", "XLF", "XLV", "XLI", "XLK", "XLB", "XLU", "XLP"
 
 
 def run_pipelines(dataset: pd.DataFrame) -> pd.DataFrame:
-    predict_feature = "XLP"
+    predict_feature = "SPY"
     predict_ahead = 10
     data_enriched = _preprocess_data(dataset, predict_feature, predict_ahead, scale=True)
     y_target = _make_target(data_enriched, predict_feature, periods_difference=predict_ahead)
 
-    _do_xgb(data_enriched, y_target)
-    print()
+    #_do_xgb(data_enriched, y_target)
+    # print()
     _do_mlp(data_enriched, y_target)
-    print()
+    # print()
     _do_lstm(data_enriched, y_target)
 
     # Return empty result for now.

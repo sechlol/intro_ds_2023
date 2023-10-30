@@ -207,10 +207,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="predicting-stock-market-moves" class="level1">
 <h1>Predicting Stock Market Moves</h1>
 <p>The aspiration of using machine learning to predict the stock market’s profitability may sound like the quest for a financial Holy Grail. However, it’s a question that has intrigued investors and data scientists alike: “Can you become a billionaire with ML?” The goal here is to harness the power of machine learning to predict whether the stock market will be profitable in a certain number of future periods, and the “certain number” is something we can tune according to our preferences. This is achieved through a binary classification approach, where for each trading day, the model attempts to predict whether the price at a specified future time will be higher than the current price (1) or not (0). For our analysis we focused mostly on the prediction of the <strong>S&amp;P 500</strong> (ticker: SPY), the index that comprises the major US stocks weighted by capitalization.</p>
-<section id="data-augmentation" class="level2">
-<h2 class="anchored" data-anchor-id="data-augmentation">Data Augmentation</h2>
+<section id="data-augmentation-and-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="data-augmentation-and-preparation">Data Augmentation and preparation</h2>
 <p>The success of a machine learning model depends on the quality and quantity of data. We make use of a dataset that encompasses 9 out of the 11 major market sector indices, along with other key US macroeconomic data. To enhance the dataset’s information content and provide our algorithms with a richer context, we employ data augmentation. Beforetraining our algorithms, we apply several transformations to the dataset. One of these enhancements involves calculating the relative strength between different market indices. This provides a deeper understanding of the interplay between various sectors within the stock market. We also compute various Simple Moving Averages (SMA) at different timeframes, including 20, 50, and 200 periods. These SMA values offer insights into the trend and momentum of stock prices, which are crucial factors in stock market predictions.</p>
 <p>Furthermore, we incorporate calculations of relative returns, which give us an idea of how individual assets or sectors are performing concerning broader market movements. All these augmented features aim to better capture the underlying patterns and relationships within the stock market.</p>
+<p>Two additional steps can be performed on the enriched data, optionally: re-sampling to a different frequency (e.g.&nbsp;monthly or weekly periods), and standardization, in which the data is normalized to have 0 mean and unit variance, which should have a regularizing effect on training.</p>
 <p>Finally, the dataset is split in two sets: one for training, that goes from the beginning of out collected historical data (from 1998) until the end of 2021; and another for testing, which cover the recent history from 2022 until today.</p>
 </section>
 <section id="metrics" class="level2">
@@ -253,6 +254,37 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p>On the training set, the confusion matrix indicates a slight bias towards false negatives. This means that the model might be missing some profitable opportunities, but it maintains a high level of accuracy. With an accuracy of approximately 82%, the model outperforms a simple dummy model, achieving an F1 score of around 0.86. The recall, measuring the model’s ability to identify positive returns, is approximately 0.90, while precision, gauging its accuracy in predicting positive returns, stands at around 0.83.</p>
+<table class="table-striped table-hover table">
+<caption>XGBoost model evaluation results</caption>
+<thead>
+<tr class="header">
+<th>Dataset</th>
+<th>Dummy Accuracy</th>
+<th>Accuracy</th>
+<th>F1 Score</th>
+<th>Recall</th>
+<th>Precision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Train</td>
+<td>0.61</td>
+<td>0.82</td>
+<td>0.86</td>
+<td>0.89</td>
+<td>0.82</td>
+</tr>
+<tr class="even">
+<td>Test</td>
+<td>0.47</td>
+<td>0.46</td>
+<td>0.63</td>
+<td>0.97</td>
+<td>0.47</td>
+</tr>
+</tbody>
+</table>
 <p>On the test set, a similar trend is observed, with a slight bias towards false negatives. The accuracy on the test set is around 46%, which is disappointingly comparable with the dummy model. This suggests that the model is failing to generalize, and any prediction is not better than a random guess.</p>
 </section>
 <section id="mlp" class="level3">
@@ -269,6 +301,37 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p>On the training set, the confusion matrix shows a balanced distribution of false positives and false negatives. This suggests that the model is achieving a compromise between correctly identifying positive and negative returns. The accuracy on the training set is approximately 73%, which is better than a simple dummy model. The F1 score is about 0.80, indicating a balance between precision and recall. The recall, measuring the model’s ability to identify positive returns, is approximately 0.86, while precision, measuring the accuracy of positive predictions, stands at around 0.74.</p>
+<table class="table-striped table-hover table">
+<caption>MLP model evaluation results</caption>
+<thead>
+<tr class="header">
+<th>Dataset</th>
+<th>Dummy Accuracy</th>
+<th>Accuracy</th>
+<th>F1 Score</th>
+<th>Recall</th>
+<th>Precision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Train</td>
+<td>0.61</td>
+<td>0.73</td>
+<td>0.79</td>
+<td>0.85</td>
+<td>0.74</td>
+</tr>
+<tr class="even">
+<td>Test</td>
+<td>0.47</td>
+<td>0.47</td>
+<td>0.41</td>
+<td>0.37</td>
+<td>0.46</td>
+</tr>
+</tbody>
+</table>
 <p>Unfortunately, the result on the test set is similar to the one produced by XGBoost. No better than a random guess.</p>
 </section>
 <section id="lstmgru" class="level3">
@@ -290,8 +353,39 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>On the training set, the confusion matrix indicates a heavy bias towards false negatives. This means that the model is more prone to missing profitable opportunities, resulting in a higher recall at the expense of precision. The binary accuracy on the training set is approximately 65%, indicating that the model outperforms a simple dummy model, even if slightly. The F1 score is about 0.73.</p>
-<p>Again, the binary accuracy on the test set is approximately 47%, which is not significantly better than random guessing.</p>
+<p>On the training set, the confusion matrix indicates a heavy bias towards false negatives. This means that the model is more prone to missing profitable opportunities, resulting in a higher recall at the expense of precision. The binary accuracy on the training set is approximately 64%, indicating that the model outperforms a simple dummy model, even if slightly. The F1 score is about 0.73.</p>
+<table class="table-striped table-hover table">
+<caption>LSTM model evaluation results</caption>
+<thead>
+<tr class="header">
+<th>Dataset</th>
+<th>Dummy Accuracy</th>
+<th>Accuracy</th>
+<th>F1 Score</th>
+<th>Recall</th>
+<th>Precision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Train</td>
+<td>0.61</td>
+<td>0.64</td>
+<td>0.73</td>
+<td>0.82</td>
+<td>0.66</td>
+</tr>
+<tr class="even">
+<td>Test</td>
+<td>0.47</td>
+<td>0.44</td>
+<td>0.43</td>
+<td>0.43</td>
+<td>0.42</td>
+</tr>
+</tbody>
+</table>
+<p>Again, the binary accuracy on the test set is approximately 44%, which is not significantly better than random guessing.</p>
 </section>
 </section>
 <section id="overall-results" class="level2">
@@ -300,9 +394,20 @@ ul.task-list li input[type="checkbox"] {
 <p>The accuracy on the test set was generally quite high, indicating that our models were proficient at making predictions based on the training data. However, there was a catch – a rather significant one. All the algorithms displayed a tendency to overfit the data. In practical terms, this means that when we applied these models to predict on the test dataset, their accuracy wasn’t substantially better than what we could achieve with a simple, naive model that doesn’t consider the complexities of the stock market (basically, no better than a random guess).</p>
 <p>This overfitting issue raises concerns about the robustness and real-world applicability of our models. While they seem to master the training data, they struggle to generalize their predictions beyond that, which is a common pitfall in machine learning. It emphasizes the importance of being cautious when interpreting the accuracy metrics alone. Successful application in the financial world necessitates not just high accuracy during training but the ability to adapt to unforeseen market dynamics and make profitable decisions. It’s a reminder that stock market prediction, even with the aid of ML, remains a complex and challenging endeavor. So, for now, we discourage the ML practitioners to take that multimillion loan for purchasing a Lamborghini.</p>
 </section>
+<section id="so-is-it-over" class="level2">
+<h2 class="anchored" data-anchor-id="so-is-it-over">So… Is it over?</h2>
+<p>No! There are many things that can be done to improve the models. We believe that the features in our dataset confused the models, because they are heavily correlated. So the first thing to try would be to change the type of augmentation and features included in the training dataset. A good strategy would be to train several models with different sets of features, and then merge the features that yield to an improved accuracy. Another low-hanging possible improvement is increasing the number of epochs (for the deep learning models based on backpropagation), or number of iterations, plus doing more hyperparameter tuning. There is evidence in the literature<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> that Deep Learning models can be used to get a small probabilistic advantage at predicting profit opportunitues, that are significantly better than random choice, even if the margin is just of a mere 54% accuracy on unseen data<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+</section>
 </section>
 
-</main>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Mahinda Mailagaha Kumbure, Christoph Lohrmann, Pasi Luukka, Jari Porras, Machine learning techniques and data for stock market forecasting: A literature review, <a href="https://doi.org/10.1016/j.eswa.2022.116659">https://doi.org/10.1016/j.eswa.2022.116659</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>S. Kim, S. Ku, W. Chang and J. W. Song, “Predicting the Direction of US Stock Prices Using Effective Transfer Entropy and Machine Learning Techniques” <a href="https://ieeexplore.ieee.org/document/9119388">https://ieeexplore.ieee.org/document/9119388</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
